@@ -1,6 +1,6 @@
 //
 //  RCPurchaseController.swift
-//  CoinApp
+//  ChatAI
 //
 //  Created by Petru Grigor on 23.12.2024.
 //

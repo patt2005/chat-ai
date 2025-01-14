@@ -8,12 +8,12 @@ workflows:
     environment: 
       ios_signing:
         distribution_type: app_store
-        bundle_identifier: com.codbun.meme.ai
+        bundle_identifier: com.codbun.chat.ai
       vars:
-        BUNDLE_ID: "com.codbun.meme.ai"
-        XCODE_WORKSPACE: "CoinApp.xcworkspace"
-        XCODE_SCHEME: "CoinApp"
-        APP_STORE_APPLE_ID: 6738891806
+        BUNDLE_ID: "com.codbun.chat.ai"
+        XCODE_WORKSPACE: "ChatAI.xcworkspace"
+        XCODE_SCHEME: "ChatAI"
+        APP_STORE_APPLE_ID: 6740526710
       xcode: latest
       cocoapods: default
     scripts:
