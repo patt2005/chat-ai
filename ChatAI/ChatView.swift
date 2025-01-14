@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Combine
+import SuperwallKit
 
 class ChatViewModel: ObservableObject {
     @Published var inputText: String = ""
@@ -24,7 +25,7 @@ class ChatViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     
-    @ObservedObject private var appProvider = AppProvider.shared
+    @ObservedObject var appProvider = AppProvider.shared
     
     private let model: AssistantModel
     private var chatHistory: ChatHistoryEntity? = nil
@@ -220,10 +221,14 @@ struct ChatView: View {
                     .padding(.horizontal, 3)
                     
                     Button(action: {
-                        Task {
-                            if !viewModel.inputText.isEmpty {
-                                await viewModel.sendTapped()
+                        if (viewModel.appProvider.isUserSubscribed) {
+                            Task {
+                                if !viewModel.inputText.isEmpty {
+                                    await viewModel.sendTapped()
+                                }
                             }
+                        } else {
+                            Superwall.shared.register(event: "campaign_trigger")
                         }
                     }) {
                         Image(systemName: "paperplane.fill")

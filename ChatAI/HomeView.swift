@@ -93,6 +93,7 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 0) {
                 HStack {
                     Text("Try Chat AI")
+                        .foregroundStyle(.white)
                     HStack(spacing: 5) {
                         Text("PRO")
                             .foregroundStyle(.white)
@@ -104,9 +105,10 @@ struct HomeView: View {
                     .background(AppConstants.shared.primaryColor)
                     .cornerRadius(10)
                     Text("for free")
+                        .foregroundStyle(.white)
                 }
                 Text("Tap to claim your offer!")
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.white.opacity(0.7))
             }
             .padding(.leading, 13)
             Spacer()
@@ -160,8 +162,13 @@ struct HomeView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading) {
                     if (!appProvider.isUserSubscribed) {
-                        premiumCard()
-                            .padding(.horizontal, 19)
+                        Button(action: {
+                            impactFeedback.impactOccurred()
+                            Superwall.shared.register(event: "campaign_trigger")
+                        }) {
+                            premiumCard()
+                                .padding(.horizontal, 19)
+                        }
                     }
                     
                     Text("Assistants 🤖")
