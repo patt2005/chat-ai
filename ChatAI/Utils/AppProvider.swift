@@ -42,6 +42,11 @@ class AppProvider: ObservableObject {
     @Published var showOnboarding = false
     @Published var isUserSubscribed = false
     
+    
+    
+    
+    
+    
     private init() {
         self.showOnboarding = !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
         Purchases.shared.getCustomerInfo { (customerInfo, error) in
