@@ -15,7 +15,7 @@ class AppConstants {
     
     let backgroundColor = Color("BackgroundColor")
     let primaryColor = Color("AccentColor")
-    let grayColor = Color(hex: "#232426")
+    let grayColor = Color(hex: "#222224")
     
     var openAiApiKey = ""
     var claudeApiKey = ""

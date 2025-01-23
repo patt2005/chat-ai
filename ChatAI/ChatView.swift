@@ -54,6 +54,12 @@ class ChatViewModel: ObservableObject {
         .store(in: &cancellables)
     }
     
+    func scrollToBottom(proxy: ScrollViewProxy) {
+        guard let id = self.messages.last?.id else { return }
+        
+        proxy.scrollTo(id, anchor: .bottomTrailing)
+    }
+    
     @MainActor
     func retry(messageRow: MessageRow) async {
         let index = messages.firstIndex { message in
@@ -155,6 +161,9 @@ struct ChatView: View {
                         }
                     }
                 }
+                .onAppear {
+                    viewModel.scrollToBottom(proxy: reader)
+                }
                 
                 if !viewModel.uploadedImages.isEmpty && viewModel.showImages {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -225,6 +234,7 @@ struct ChatView: View {
                             Task {
                                 if !viewModel.inputText.isEmpty {
                                     await viewModel.sendTapped()
+                                    viewModel.scrollToBottom(proxy: reader)
                                 }
                             }
                         } else {

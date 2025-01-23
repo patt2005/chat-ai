@@ -72,6 +72,12 @@ struct HistoryView: View {
     
     @ObservedObject private var appProvider = AppProvider.shared
     
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    
+    init() {
+        impactFeedback.prepare()
+    }
+    
     var body: some View {
         if appProvider.chatHistory.isEmpty {
             VStack(spacing: 30) {
@@ -110,6 +116,7 @@ struct HistoryView: View {
                 }
                 
                 Button(action: {
+                    impactFeedback.impactOccurred()
                     appProvider.navigationPath.append(.chatView())
                 }) {
                     HStack {
@@ -143,6 +150,7 @@ struct HistoryView: View {
                 LazyVStack(spacing: 15) {
                     ForEach(appProvider.chatHistory.reversed()) { history in
                         Button(action: {
+                            impactFeedback.impactOccurred()
                             appProvider.navigationPath.append(.chatView(history: history))
                         }) {
                             ChatHistoryCard(history: history)

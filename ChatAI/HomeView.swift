@@ -88,45 +88,6 @@ struct HomeView: View {
         "What are the potential risks and rewards of investing in meme coins?"
     ]
     
-    private func premiumCard() -> some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    Text("Try Chat AI")
-                        .foregroundStyle(.white)
-                    HStack(spacing: 5) {
-                        Text("PRO")
-                            .foregroundStyle(.white)
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 5)
-                    .background(AppConstants.shared.primaryColor)
-                    .cornerRadius(10)
-                    Text("for free")
-                        .foregroundStyle(.white)
-                }
-                Text("Tap to claim your offer!")
-                    .foregroundStyle(.white.opacity(0.7))
-            }
-            .padding(.leading, 13)
-            Spacer()
-            Image("ai")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 110, height: 100)
-        }
-        .frame(maxWidth: .infinity)
-        .background(LinearGradient(colors: [Color(hex: "#16593f"),Color(hex: "#54bb90")], startPoint: .topLeading, endPoint: .bottomTrailing))
-        .cornerRadius(15)
-        .overlay(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(Color.white, lineWidth: 1.5)
-        )
-        .padding(.top, 30)
-    }
-    
     private func featureCard(featureInfo: PremiumFeature) -> some View {
         VStack(spacing: 0) {
             Image(featureInfo.image)
@@ -149,28 +110,12 @@ struct HomeView: View {
         .frame(width: 150)
         .background(AppConstants.shared.grayColor)
         .cornerRadius(15)
-        .overlay(
-            RoundedRectangle(cornerRadius: 15)
-                .stroke(Color.gray, lineWidth: 1)
-        )
-        .padding(.vertical, 1)
-        .padding(.horizontal, 1)
     }
     
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading) {
-                    if (!appProvider.isUserSubscribed) {
-                        Button(action: {
-                            impactFeedback.impactOccurred()
-                            Superwall.shared.register(event: "campaign_trigger")
-                        }) {
-                            premiumCard()
-                                .padding(.horizontal, 19)
-                        }
-                    }
-                    
                     Text("Assistants 🤖")
                         .font(.title2.bold())
                         .padding(.top, 15)
@@ -201,7 +146,7 @@ struct HomeView: View {
                                     .frame(width: 140, height: 105)
                                     .background(
                                         RoundedRectangle(cornerRadius: 15)
-                                            .stroke(AppConstants.shared.grayColor, lineWidth: 1)
+                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                                             .background(
                                                 RoundedRectangle(cornerRadius: 15)
                                                     .fill(Color(.systemBackground))
@@ -297,7 +242,7 @@ struct HomeView: View {
                                     .frame(width: 170, height: 120)
                                     .background(
                                         RoundedRectangle(cornerRadius: 15)
-                                            .stroke(AppConstants.shared.grayColor, lineWidth: 1)
+                                            .stroke(Color.gray.opacity(0.5), lineWidth: 1)
                                             .background(
                                                 RoundedRectangle(cornerRadius: 15)
                                                     .fill(Color(.systemBackground))
