@@ -109,8 +109,10 @@ struct ContentView: View {
                 case .speachDetailsView(let filePath) : SpeachDetailsView(audioFilePath: filePath)
                 }
             }
-            .fullScreenCover(isPresented: $appProvider.showOnboarding) {
-                OnboardingView()
+            .onAppear {
+                if appProvider.showOnboarding {
+                    Superwall.shared.register(event: "onboarding_trigger")
+                }
             }
         }
         .preferredColorScheme(.dark)
