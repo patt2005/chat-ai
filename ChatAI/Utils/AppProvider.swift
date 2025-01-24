@@ -39,11 +39,11 @@ class AppProvider: ObservableObject {
     
     @Published var chatHistory: [ChatHistoryEntity] = []
     
-    @Published var showOnboarding = false
+    @Published var isFirstOpen = false
     @Published var isUserSubscribed = false
     
     private init() {
-        self.showOnboarding = !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding")
+        self.isFirstOpen = !UserDefaults.standard.bool(forKey: "hasOpenedAppBefore")
         Purchases.shared.getCustomerInfo { (customerInfo, error) in
             self.isUserSubscribed = customerInfo?.entitlements.all["pro"]?.isActive == true
         }
@@ -53,8 +53,10 @@ class AppProvider: ObservableObject {
     
     func completeOnboarding() {
         AnalyticsManager.shared.logEvent(name: AnalyticsEventTutorialComplete)
-        UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
-        self.showOnboarding = false
+        UserDefaults.standard.set(true, forKey: "hasOpenedAppBefore")
+        DispatchQueue.main.async {
+            self.isFirstOpen = false
+        }
     }
     
     func saveChatHistory() {

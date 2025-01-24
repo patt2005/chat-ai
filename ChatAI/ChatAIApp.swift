@@ -18,7 +18,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
-        Superwall.configure(apiKey: AppConstants.shared.superWallApiKey)
+        Superwall.configure(apiKey: AppConstants.shared.superWallApiKey, purchaseController: purchaseController)
         
         purchaseController.syncSubscriptionStatus()
         

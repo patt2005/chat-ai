@@ -220,7 +220,7 @@ struct ChatView: View {
                     
                     ZStack {
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color(.secondarySystemBackground))
+                            .fill(AppConstants.shared.grayColor)
                             .frame(height: 45)
                         
                         TextField("Type here...", text: $viewModel.inputText)
@@ -249,9 +249,6 @@ struct ChatView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(10)
-                .background(AppConstants.shared.backgroundColor)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 2)
                 .onAppear {
                     if !self.prompt.isEmpty {
                         viewModel.inputText = prompt

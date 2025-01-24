@@ -62,16 +62,32 @@ extension GeminiAiApi {
     }
     
     func getPDFSummary(pdfFile: URL) async throws -> String {
+        let fileManager = FileManager.default
+        let isReadable = fileManager.isReadableFile(atPath: pdfFile.path)
+        
+        if !isReadable {
+            throw NSError(domain: "FilePermissionError", code: 403, userInfo: [NSLocalizedDescriptionKey: "No permission to read the file at \(pdfFile.path)"])
+        }
+        
         let model = vertex.generativeModel(modelName: "gemini-1.5-flash")
         
-        let pdfFilePart = InlineDataPart(data: try Data(contentsOf: pdfFile), mimeType: "application/pdf")
-        
-        let prompt = "You are an advanced AI assistant specialized in summarizing text documents. Your task is to read the content of the provided PDF file and generate a concise, clear, and accurate summary. Focus on capturing the main ideas, key points, and any important details while ignoring unnecessary or repetitive information. Ensure the summary is easy to understand and formatted in complete sentences."
-        
-        let contentStream = try await model.generateContent(pdfFilePart, prompt)
-        
-        let filteredText = contentStream.text?.replacingOccurrences(of: "**", with: "")
-        
-        return filteredText ?? ""
+        if pdfFile.startAccessingSecurityScopedResource() {
+            defer { pdfFile.stopAccessingSecurityScopedResource() }
+            
+            do {
+                let pdfData = try Data(contentsOf: pdfFile)
+                let pdfFilePart = InlineDataPart(data: pdfData, mimeType: "application/pdf")
+                
+                let prompt = "You are an AI assistant that summarizes PDF documents. Extract key points concisely."
+                
+                let contentStream = try await model.generateContent(pdfFilePart, prompt)
+                
+                return contentStream.text?.replacingOccurrences(of: "**", with: "") ?? ""
+            } catch {
+                throw NSError(domain: "FileReadError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Failed to read the PDF file: \(error.localizedDescription)"])
+            }
+        } else {
+            throw NSError(domain: "FilePermissionError", code: 403, userInfo: [NSLocalizedDescriptionKey: "Cannot access the selected file."])
+        }
     }
 }

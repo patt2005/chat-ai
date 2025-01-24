@@ -17,6 +17,11 @@ class ContentViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
+        if AppProvider.shared.isFirstOpen {
+            Superwall.shared.register(event: "onboarding_trigger")
+            AppProvider.shared.completeOnboarding()
+        }
+        
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
         tabBarAppearance.backgroundColor = UIColor(Color(hex: "#19191b"))
@@ -70,7 +75,7 @@ struct ContentView: View {
                             .scaledToFit()
                             .frame(width: 35, height: 35)
                         
-                        Text("Chat AI")
+                        Text("Companion AI")
                             .font(.title2.bold())
                             .foregroundStyle(.white)
                     }
@@ -107,11 +112,6 @@ struct ContentView: View {
                 case .summaryView(let text): TextSummaryView(text: text)
                 case .imageDataView(let image): ImageDataView(data: image)
                 case .speachDetailsView(let filePath) : SpeachDetailsView(audioFilePath: filePath)
-                }
-            }
-            .onAppear {
-                if appProvider.showOnboarding {
-                    Superwall.shared.register(event: "onboarding_trigger")
                 }
             }
         }
