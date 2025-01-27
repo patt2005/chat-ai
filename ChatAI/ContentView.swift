@@ -75,7 +75,7 @@ struct ContentView: View {
                             .scaledToFit()
                             .frame(width: 35, height: 35)
                         
-                        Text("Companion AI")
+                        Text("Bun AI")
                             .font(.title2.bold())
                             .foregroundStyle(.white)
                     }

@@ -61,33 +61,15 @@ extension GeminiAiApi {
         return filteredText ?? ""
     }
     
-    func getPDFSummary(pdfFile: URL) async throws -> String {
-        let fileManager = FileManager.default
-        let isReadable = fileManager.isReadableFile(atPath: pdfFile.path)
-        
-        if !isReadable {
-            throw NSError(domain: "FilePermissionError", code: 403, userInfo: [NSLocalizedDescriptionKey: "No permission to read the file at \(pdfFile.path)"])
-        }
-        
+    func getPDFSummary(pdfData: Data) async throws -> String {
         let model = vertex.generativeModel(modelName: "gemini-1.5-flash")
         
-        if pdfFile.startAccessingSecurityScopedResource() {
-            defer { pdfFile.stopAccessingSecurityScopedResource() }
-            
-            do {
-                let pdfData = try Data(contentsOf: pdfFile)
-                let pdfFilePart = InlineDataPart(data: pdfData, mimeType: "application/pdf")
-                
-                let prompt = "You are an AI assistant that summarizes PDF documents. Extract key points concisely."
-                
-                let contentStream = try await model.generateContent(pdfFilePart, prompt)
-                
-                return contentStream.text?.replacingOccurrences(of: "**", with: "") ?? ""
-            } catch {
-                throw NSError(domain: "FileReadError", code: 500, userInfo: [NSLocalizedDescriptionKey: "Failed to read the PDF file: \(error.localizedDescription)"])
-            }
-        } else {
-            throw NSError(domain: "FilePermissionError", code: 403, userInfo: [NSLocalizedDescriptionKey: "Cannot access the selected file."])
-        }
+        let pdfFilePart = InlineDataPart(data: pdfData, mimeType: "application/pdf")
+        
+        let prompt = "You are an AI assistant that summarizes PDF documents. Extract key points concisely."
+        
+        let contentStream = try await model.generateContent(pdfFilePart, prompt)
+        
+        return contentStream.text?.replacingOccurrences(of: "**", with: "") ?? ""
     }
 }

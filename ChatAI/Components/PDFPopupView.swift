@@ -12,7 +12,9 @@ struct PDFPopupView: View {
     @Binding var isLoading: Bool
     @Binding var showError: Bool
     
-    @State private var pdfFile: URL? = nil
+    @State private var pdfFileData: Data? = nil
+    @State private var pdfFilePath: URL? = nil
+    
     @State private var showingFilePicker = false
     
     @ObservedObject private var appProvider = AppProvider.shared
@@ -52,7 +54,7 @@ struct PDFPopupView: View {
                             Image(systemName: "doc.text")
                                 .font(.title3)
                                 .foregroundColor(.gray)
-                            Text(pdfFile == nil ? "Upload PDF" : pdfFile?.lastPathComponent ?? "")
+                            Text(pdfFilePath == nil ? "Upload PDF" : pdfFilePath?.lastPathComponent ?? "")
                                 .font(.body)
                                 .foregroundColor(.primary)
                         }
@@ -66,7 +68,8 @@ struct PDFPopupView: View {
                         case .success(let url):
                             if url.startAccessingSecurityScopedResource() {
                                 defer { url.stopAccessingSecurityScopedResource() }
-                                pdfFile = url
+                                pdfFileData = try? Data(contentsOf: url)
+                                pdfFilePath = url
                             } else {
                                 showError = true
                                 print("Failed to get permission to access file.")
@@ -82,7 +85,7 @@ struct PDFPopupView: View {
                         .multilineTextAlignment(.center)
                     
                     Button(action: {
-                        guard let pdfFile = pdfFile else { return }
+                        guard let pdfFileData = pdfFileData else { return }
                         
                         withAnimation {
                             isPresented = false
@@ -91,7 +94,7 @@ struct PDFPopupView: View {
                         
                         Task {
                             do {
-                                let response = try await GeminiAiApi().getPDFSummary(pdfFile: pdfFile)
+                                let response = try await GeminiAiApi().getPDFSummary(pdfData: pdfFileData)
                                 
                                 appProvider.navigationPath.append(.summaryView(text: response))
                             } catch {
@@ -100,19 +103,20 @@ struct PDFPopupView: View {
                             }
                             
                             isLoading = false
-                            self.pdfFile = nil
+                            self.pdfFileData = nil
+                            self.pdfFilePath = nil
                         }
                     }) {
                         Text("Generate Summary")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(pdfFile == nil ? Color.gray : AppConstants.shared.primaryColor)
+                            .background(pdfFileData == nil ? Color.gray : AppConstants.shared.primaryColor)
                             .foregroundColor(.white)
                             .cornerRadius(10)
-                            .opacity(pdfFile == nil ? 0.5 : 1.0)
+                            .opacity(pdfFileData == nil ? 0.5 : 1.0)
                     }
-                    .disabled(pdfFile == nil)
+                    .disabled(pdfFileData == nil)
                 }
                 .transition(.opacity)
                 .padding()
