@@ -22,6 +22,7 @@ struct HistoryView: View {
             case .claudeAi: return .init(name: "Claude AI", avatar: "claude")
             case .gemini: return .init(name: "Gemini", avatar: "gemini")
             case .metaAi: return .init(name: "Meta AI", avatar: "meta")
+            case .deepSeek: return .init(name: "DeepSeek", avatar: "deepseek")
             }
         }
         
@@ -139,6 +140,7 @@ struct HistoryView: View {
                             )
                             .shadow(color: .green.opacity(0.5), radius: 8, x: 0, y: 5)
                     )
+                    .padding(.bottom, 60)
                 }
                 .scaleEffect(1.05)
                 .animation(.easeInOut(duration: 0.3), value: true)

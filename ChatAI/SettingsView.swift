@@ -27,7 +27,7 @@ struct SettingsView: View {
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
                             Text("Share App")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.8))
                                 .padding(.leading, 8.5)
                         }
                     }
@@ -51,7 +51,7 @@ struct SettingsView: View {
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
                             Text("Contact us")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.8))
                         }
                     }
 
@@ -63,7 +63,7 @@ struct SettingsView: View {
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
                             Text("Rate us")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.8))
                                 .padding(.leading, 5)
                         }
                     }
@@ -76,7 +76,7 @@ struct SettingsView: View {
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
                             Text("Privacy Policy")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.8))
                         }
                     }
 
@@ -86,7 +86,7 @@ struct SettingsView: View {
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
                             Text("Terms of Use")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.8))
                         }
                     }
                 }
@@ -98,7 +98,7 @@ struct SettingsView: View {
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
                             Text("About us")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.8))
                         }
                     }
 
@@ -108,7 +108,7 @@ struct SettingsView: View {
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
                             Text("Our Apps")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white.opacity(0.8))
                         }
                     }
                 }

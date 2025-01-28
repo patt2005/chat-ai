@@ -34,6 +34,8 @@ struct HomeView: View {
     @State private var showErrorAlert = false
     @State private var isLoading = false
     
+    @Environment(\.requestReview) var requestReview
+    
     private let ideaInfoList: [IdeaInfo] = [
         IdeaInfo(
             title: "Plan a Dream Vacation",
@@ -73,6 +75,7 @@ struct HomeView: View {
     
     private let assistantsList: [AssistantModel] = [
         AssistantModel(name: "ChatGPT", avatar: "chatgpt", apiModel: OpenAiApi.shared, type: .openAi),
+        AssistantModel(name: "DeepSeek", avatar: "deepseek", apiModel: DeepSeekApi.shared, type: .deepSeek),
         AssistantModel(name: "Claude AI", avatar: "claude", apiModel: ClaudeAiApi.shared, type: .claudeAi),
         AssistantModel(name: "Gemini", avatar: "gemini", apiModel: GeminiAiApi.shared, type: .gemini),
         AssistantModel(name: "Meta AI", avatar: "meta", apiModel: MetaAiApi.shared, type: .metaAi),
@@ -208,6 +211,11 @@ struct HomeView: View {
                         .font(.title2.bold())
                         .padding(.top, 15)
                         .padding(.horizontal, 19)
+                        .onAppear {
+                            if appProvider.isFirstOpen {
+                                requestReview()
+                            }
+                        }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {

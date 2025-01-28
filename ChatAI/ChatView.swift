@@ -118,6 +118,8 @@ struct ChatView: View {
     
     @State private var showImagePicker = false
     
+    @FocusState private var isFocused: Bool
+    
     let prompt: String
     let model: AssistantModel
     
@@ -161,94 +163,104 @@ struct ChatView: View {
                         }
                     }
                 }
+                .onTapGesture {
+                    isFocused = false
+                }
                 .onAppear {
                     viewModel.scrollToBottom(proxy: reader)
                 }
                 
-                if !viewModel.uploadedImages.isEmpty && viewModel.showImages {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: 10) {
-                            ForEach(Array(viewModel.uploadedImages.enumerated()), id: \.offset) { index, image in
-                                ZStack(alignment: .topTrailing) {
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 80, height: 80)
-                                        .cornerRadius(10)
-                                        .clipped()
-                                    
-                                    Button(action: {
-                                        viewModel.uploadedImages.remove(at: index)
-                                    }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(.gray)
-                                            .background(Color.white.clipShape(Circle()))
+                VStack(alignment: .leading) {
+                    if !viewModel.uploadedImages.isEmpty && viewModel.showImages {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            LazyHStack(spacing: 10) {
+                                ForEach(Array(viewModel.uploadedImages.enumerated()), id: \.offset) { index, image in
+                                    ZStack(alignment: .topTrailing) {
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 80, height: 80)
+                                            .cornerRadius(10)
+                                            .clipped()
+                                        
+                                        Button(action: {
+                                            viewModel.uploadedImages.remove(at: index)
+                                        }) {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .foregroundColor(.gray)
+                                                .background(Color.white.clipShape(Circle()))
+                                        }
+                                        .offset(x: -5, y: 7)
                                     }
-                                    .offset(x: -5, y: 7)
                                 }
                             }
+                            .padding(.horizontal, 14)
                         }
-                        .padding(.horizontal, 14)
+                        .frame(height: 80)
+                        .padding(.top, 5)
                     }
-                    .padding(.leading, 53)
-                    .frame(height: 80)
-                }
-                
-                HStack(spacing: 10) {
-                    Menu {
-                        Button(action: {
-                            viewModel.sourceType = .photoLibrary
-                            showImagePicker = true
-                        }) {
-                            Label("Attach Photos", systemImage: "photo.on.rectangle.angled")
-                        }
-                        Button(action: {
-                            viewModel.sourceType = .camera
-                            showImagePicker = true
-                        }) {
-                            Label("Take Photo", systemImage: "camera.fill")
-                        }
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title)
-                            .foregroundColor(.white)
-                    }
-                    .sheet(isPresented: $showImagePicker) {
-                        ImagePicker(selectedImage: $viewModel.selectedImage, isImagePickerPresented: $showImagePicker, sourceType: viewModel.sourceType)
-                    }
-                    .padding(.leading, 10)
                     
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(AppConstants.shared.grayColor)
-                            .frame(height: 45)
+                    HStack(alignment: .center, spacing: 5) {
+                        Menu {
+                            Button(action: {
+                                viewModel.sourceType = .photoLibrary
+                                showImagePicker = true
+                            }) {
+                                Label("Attach Photos", systemImage: "photo.on.rectangle.angled")
+                            }
+                            Button(action: {
+                                viewModel.sourceType = .camera
+                                showImagePicker = true
+                            }) {
+                                Label("Take Photo", systemImage: "camera.fill")
+                            }
+                        } label: {
+                            Image(systemName: "plus.circle.fill")
+                                .font(.title)
+                                .foregroundColor(.white)
+                        }
+                        .sheet(isPresented: $showImagePicker) {
+                            ImagePicker(selectedImage: $viewModel.selectedImage, isImagePickerPresented: $showImagePicker, sourceType: viewModel.sourceType)
+                        }
+                        .padding(.leading, 10)
                         
-                        TextField("Type here...", text: $viewModel.inputText)
-                            .padding(.horizontal, 15)
+                        TextField("Type a message...", text: $viewModel.inputText, axis: .vertical)
+                            .lineLimit(1...4)
+                            .padding(.horizontal, 6)
                             .foregroundColor(.white)
-                    }
-                    .padding(.horizontal, 3)
-                    
-                    Button(action: {
-                        if (viewModel.appProvider.isUserSubscribed) {
-                            Task {
-                                if !viewModel.inputText.isEmpty {
-                                    await viewModel.sendTapped()
-                                    viewModel.scrollToBottom(proxy: reader)
+                            .autocorrectionDisabled(true)
+                            .textInputAutocapitalization(.sentences)
+                            .focused($isFocused)
+                        
+                        Button(action: {
+                            if viewModel.appProvider.isUserSubscribed {
+                                Task {
+                                    if !viewModel.inputText.isEmpty {
+                                        await viewModel.sendTapped()
+                                        viewModel.scrollToBottom(proxy: reader)
+                                    }
                                 }
+                            } else {
+                                Superwall.shared.register(event: "campaign_trigger")
                             }
-                        } else {
-                            Superwall.shared.register(event: "campaign_trigger")
+                        }) {
+                            Image(systemName: "paperplane.fill")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                                .padding(7)
+                                .background(AppConstants.shared.primaryColor)
+                                .clipShape(Circle())
+                                .padding(.trailing, 10)
                         }
-                    }) {
-                        Image(systemName: "paperplane.fill")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .padding(.trailing, 10)
                     }
                 }
+                .padding(.vertical, 8)
+                .background(Color.gray.opacity(0.2))
+                .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
                 .frame(maxWidth: .infinity)
-                .padding(10)
+                .cornerRadius(20)
+                .padding(.horizontal, 15)
+                .padding(.vertical, 14)
                 .onAppear {
                     if !self.prompt.isEmpty {
                         viewModel.inputText = prompt

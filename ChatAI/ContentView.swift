@@ -75,7 +75,7 @@ struct ContentView: View {
                             .scaledToFit()
                             .frame(width: 35, height: 35)
                         
-                        Text("Bun AI")
+                        Text("Seek AI")
                             .font(.title2.bold())
                             .foregroundStyle(.white)
                     }
@@ -98,8 +98,8 @@ struct ContentView: View {
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
                             }
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 5)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 7)
                             .background(AppConstants.shared.primaryColor)
                             .cornerRadius(10)
                         }

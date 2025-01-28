@@ -1,23 +1,15 @@
 //
-//  OpenAiApi.swift
+//  DeepSeekApi.swift
 //  ChatAI
 //
-//  Created by Petru Grigor on 27.12.2024.
+//  Created by Petru Grigor on 28.01.2025.
 //
 
 import Foundation
 
-struct ImageGenerationData: Decodable, Hashable {
-    let revised_prompt: String
-    let url: String
-}
-
-enum ApiAnalysisError: Error {
-    case invalidData
-    case invalidResponse
-}
-
-class OpenAiApi: AiModel {
+class DeepSeekApi: AiModel {
+    static var shared: any AiModel = DeepSeekApi()
+    
     struct CompletionResponse: Decodable {
         struct Choice: Decodable {
             let delta: Delta
@@ -30,12 +22,6 @@ class OpenAiApi: AiModel {
         let choices: [Choice]
     }
     
-    struct ImageGenerationResponse: Decodable {
-        let data: [ImageGenerationData]
-    }
-    
-    static var shared: any AiModel = OpenAiApi()
-    
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error> {
         let url = URL(string: "https://api.openai.com/v1/chat/completions")!
         
@@ -47,7 +33,7 @@ class OpenAiApi: AiModel {
         var messages: [[String: Any]] = [
             [
                 "role": "developer",
-                "content": "You are Chat GPT, a helpful assistant. You can answer any questions that user has."
+                "content": "You are DeepSeek, a helpful assistant. You can answer any questions that user has."
             ]
         ]
         
@@ -123,71 +109,5 @@ class OpenAiApi: AiModel {
                 }
             }
         }
-    }
-}
-
-extension OpenAiApi {
-    func generateImage(_ prompt: String, size: String) async throws -> ImageGenerationData {
-        guard let url = URL(string: "https://api.openai.com/v1/images/generations") else { throw URLError(.badURL) }
-        
-        let headers = ["Authorization": "Bearer \(AppConstants.shared.openAiApiKey)", "Content-Type": "application/json"]
-        
-        let body: [String: Encodable] = [
-            "model": "dall-e-3",
-            "size": size,
-            "n": 1,
-            "prompt": prompt
-        ]
-        
-        var request = URLRequest(url: url)
-        
-        request.allHTTPHeaderFields = headers
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: body, options: []) else {
-            print("Error: Unable to serialize JSON")
-            throw ApiAnalysisError.invalidData
-        }
-        
-        request.httpBody = jsonData
-        request.httpMethod = "POST"
-        
-        let (data, _) = try await URLSession.shared.data(for: request)
-        
-        let decoded = try JSONDecoder().decode(ImageGenerationResponse.self, from: data)
-        
-        guard let imageData = decoded.data.first else { throw ApiAnalysisError.invalidData }
-        
-        return imageData
-    }
-    
-    func generateSpeach(_ prompt: String, voice: String) async throws -> String {
-        guard let url = URL(string: "https://api.openai.com/v1/audio/speech") else { throw URLError(.badURL) }
-        
-        let body: [String: Any] = [
-            "model": "tts-1",
-            "input": prompt,
-            "voice": voice,
-        ]
-        
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else {
-            throw NSError(domain: "Invalid JSON", code: 0, userInfo: nil)
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("Bearer \(AppConstants.shared.openAiApiKey)", forHTTPHeaderField: "Authorization")
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        
-        let (data, _) = try await URLSession.shared.data(for: request)
-        
-        let tempFileUrl = FileManager.default.temporaryDirectory.appendingPathComponent("speech.mp3")
-
-        if FileManager.default.fileExists(atPath: tempFileUrl.path) {
-            try FileManager.default.removeItem(at: tempFileUrl)
-        }
-        
-        try data.write(to: tempFileUrl)
-        
-        return tempFileUrl.path
     }
 }
