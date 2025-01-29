@@ -23,6 +23,7 @@ struct HistoryView: View {
             case .gemini: return .init(name: "Gemini", avatar: "gemini")
             case .metaAi: return .init(name: "Meta AI", avatar: "meta")
             case .deepSeek: return .init(name: "DeepSeek", avatar: "deepseek")
+            case .qwen: return .init(name: "Qwen", avatar: "qwen")
             }
         }
         

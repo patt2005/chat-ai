@@ -54,6 +54,7 @@ enum AssistantModelType: String, Codable {
     case gemini = "gemini"
     case metaAi = "metaAi"
     case deepSeek = "deepSeek"
+    case qwen = "qwen"
 }
 
 func convertImageToBase64(image: UIImage) -> String? {

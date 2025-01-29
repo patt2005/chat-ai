@@ -342,7 +342,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ChatAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Deep AI";
+				INFOPLIST_KEY_CFBundleDisplayName = "Qwen AI";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to allow you to take photos for ai chat.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to save images to your photo library.";
@@ -379,7 +379,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ChatAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Deep AI";
+				INFOPLIST_KEY_CFBundleDisplayName = "Qwen AI";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to allow you to take photos for ai chat.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to save images to your photo library.";

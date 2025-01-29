@@ -75,7 +75,7 @@ struct ContentView: View {
                             .scaledToFit()
                             .frame(width: 35, height: 35)
                         
-                        Text("Seek AI")
+                        Text("Qwen AI")
                             .font(.title2.bold())
                             .foregroundStyle(.white)
                     }
