@@ -75,7 +75,6 @@ struct HomeView: View {
     
     private let assistantsList: [AssistantModel] = [
         AssistantModel(name: "Qwen", avatar: "qwen", apiModel: QwenApi.shared, type: .qwen),
-        AssistantModel(name: "DeepSeek", avatar: "deepseek", apiModel: DeepSeekApi.shared, type: .deepSeek),
         AssistantModel(name: "ChatGPT", avatar: "chatgpt", apiModel: OpenAiApi.shared, type: .openAi),
         AssistantModel(name: "Claude AI", avatar: "claude", apiModel: ClaudeAiApi.shared, type: .claudeAi),
         AssistantModel(name: "Gemini", avatar: "gemini", apiModel: GeminiAiApi.shared, type: .gemini),
