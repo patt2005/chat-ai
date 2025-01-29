@@ -13,6 +13,9 @@ let purchaseController = RCPurchaseController()
 class AppConstants {
     static let shared = AppConstants()
     
+    let appCode = "chat-ai"
+    let appVersion = "1.0.12"
+    
     let backgroundColor = Color("BackgroundColor")
     let primaryColor = Color("AccentColor")
     let grayColor = Color(hex: "#222224")

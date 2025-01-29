@@ -233,8 +233,10 @@ struct ChatView: View {
                             .focused($isFocused)
                         
                         Button(action: {
-                            if viewModel.appProvider.isUserSubscribed {
+                            print("\(viewModel.appProvider.messagesCount)")
+                            if viewModel.appProvider.isUserSubscribed || viewModel.appProvider.messagesCount <= 3 {
                                 Task {
+                                    viewModel.appProvider.sendMessage()
                                     if !viewModel.inputText.isEmpty {
                                         await viewModel.sendTapped()
                                         viewModel.scrollToBottom(proxy: reader)
