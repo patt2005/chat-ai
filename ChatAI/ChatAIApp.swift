@@ -100,15 +100,15 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 //    }
 //}
 //
-//@main
-//struct ChatAIApp: App {
-//    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-//    
-//    var body: some Scene {
-//        WindowGroup {
-//            NavigationView {
-//                ContentView()
-//            }
-//        }
-//    }
-//}
+@main
+struct ChatAIApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
+    var body: some Scene {
+        WindowGroup {
+            NavigationView {
+                ContentView()
+            }
+        }
+    }
+}
