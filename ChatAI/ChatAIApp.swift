@@ -25,7 +25,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 //            await handleNotificationPermissions(application: application)
 //        }
         
-        Superwall.configure(apiKey: AppConstants.shared.superWallApiKey)
+        Superwall.configure(apiKey: AppConstants.shared.superWallApiKey, purchaseController: purchaseController)
         
         purchaseController.syncSubscriptionStatus()
         

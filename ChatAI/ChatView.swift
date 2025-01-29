@@ -233,6 +233,7 @@ struct ChatView: View {
                             .focused($isFocused)
                         
                         Button(action: {
+                            print("\(viewModel.appProvider.isUserSubscribed)")
                             print("\(viewModel.appProvider.messagesCount)")
                             if viewModel.appProvider.isUserSubscribed || viewModel.appProvider.messagesCount <= 3 {
                                 Task {
