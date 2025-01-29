@@ -21,10 +21,12 @@ class AppConstants {
     var claudeApiKey = ""
     let revenueCatApiKey = "appl_XoAdMiLzAeolMowFFOghocvoFQs"
     let superWallApiKey = "pk_9c6b16267658b61dce6b3efd512cf7fff03930b2acca64e7"
+    var qwenApiKey = ""
     
     struct ApiResponse: Decodable {
         let openAiApiKey: String
         let claudeAiApiKey: String
+        let qwenApiKey: String
     }
     
     private func getApiKeys() async {
@@ -36,6 +38,8 @@ class AppConstants {
             
             openAiApiKey = content.openAiApiKey
             claudeApiKey = content.claudeAiApiKey
+            qwenApiKey = content.qwenApiKey
+            
         } catch {
             print("Caught an error retrieving API key: \(error.localizedDescription)")
         }

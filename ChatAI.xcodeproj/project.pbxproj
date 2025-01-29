@@ -10,6 +10,7 @@
 		528F8579B0EB6D779831C2E9 /* Pods_ChatAI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D3D89EB5039FD4A4E09A508 /* Pods_ChatAI.framework */; };
 		816F55882D22E9F60065E7E3 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 816F55872D22E9F60065E7E3 /* FirebaseAnalyticsWithoutAdIdSupport */; };
 		816F558B2D22EA760065E7E3 /* FirebaseVertexAI in Frameworks */ = {isa = PBXBuildFile; productRef = 816F558A2D22EA760065E7E3 /* FirebaseVertexAI */; };
+		81A45AF92D4A3BCD00C50ED4 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 81A45AF82D4A3BCD00C50ED4 /* FirebaseMessaging */; };
 		81F433152D36925D000A3631 /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 81F433142D36925D000A3631 /* RevenueCat */; };
 		81F433172D36925D000A3631 /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 81F433162D36925D000A3631 /* RevenueCatUI */; };
 		81F433192D36927D000A3631 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81F433182D36927D000A3631 /* StoreKit.framework */; };
@@ -51,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81A45AF92D4A3BCD00C50ED4 /* FirebaseMessaging in Frameworks */,
 				81F433202D3699F0000A3631 /* FirebaseAnalytics in Frameworks */,
 				81F433172D36925D000A3631 /* RevenueCatUI in Frameworks */,
 				816F55882D22E9F60065E7E3 /* FirebaseAnalyticsWithoutAdIdSupport in Frameworks */,
@@ -335,8 +337,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ChatAI/ChatAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_ASSET_PATHS = "\"ChatAI/Preview Content\"";
 				DEVELOPMENT_TEAM = VGKDATW82L;
 				ENABLE_PREVIEWS = YES;
@@ -355,14 +358,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.8;
+				MARKETING_VERSION = 1.0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.codbun.chat.ai;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -372,8 +375,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = ChatAI/ChatAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_ASSET_PATHS = "\"ChatAI/Preview Content\"";
 				DEVELOPMENT_TEAM = VGKDATW82L;
 				ENABLE_PREVIEWS = YES;
@@ -392,14 +396,14 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.8;
+				MARKETING_VERSION = 1.0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.codbun.chat.ai;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -463,6 +467,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 816F55862D22E9F60065E7E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseVertexAI;
+		};
+		81A45AF82D4A3BCD00C50ED4 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 816F55862D22E9F60065E7E3 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		81F433142D36925D000A3631 /* RevenueCat */ = {
 			isa = XCSwiftPackageProductDependency;

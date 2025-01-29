@@ -23,16 +23,16 @@ class QwenApi: AiModel {
     }
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error> {
-        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+        let url = URL(string: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions")!
         
         let headers = [
             "Content-Type": "application/json",
-            "Authorization": "Bearer \(AppConstants.shared.openAiApiKey)"
+            "Authorization": "Bearer \(AppConstants.shared.qwenApiKey)"
         ]
         
         var messages: [[String: Any]] = [
             [
-                "role": "developer",
+                "role": "system",
                 "content": "You are Qwen, a helpful assistant. You can answer any questions that user has."
             ]
         ]
@@ -43,7 +43,7 @@ class QwenApi: AiModel {
                 "content": chatHistory.sendText
             ])
             messages.append([
-                "role": "developer",
+                "role": "system",
                 "content": chatHistory.responseText ?? ""
             ])
         }
@@ -64,7 +64,7 @@ class QwenApi: AiModel {
         ])
         
         let requestBody: [String: Any] = [
-            "model": "gpt-4o-mini",
+            "model": "qwen-plus",
             "max_tokens": 1024,
             "messages": messages,
             "stop": [
