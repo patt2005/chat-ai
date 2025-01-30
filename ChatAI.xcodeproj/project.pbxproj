@@ -337,13 +337,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ChatAI/ChatAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				DEVELOPMENT_ASSET_PATHS = "\"ChatAI/Preview Content\"";
 				DEVELOPMENT_TEAM = VGKDATW82L;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ChatAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Qwen AI";
+				INFOPLIST_KEY_CFBundleDisplayName = "Chatbun AI";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to allow you to take photos for ai chat.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to save images to your photo library.";
@@ -356,7 +356,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.14;
+				MARKETING_VERSION = 1.0.15;
 				PRODUCT_BUNDLE_IDENTIFIER = com.codbun.chat.ai;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -375,13 +375,13 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ChatAI/ChatAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 15;
+				CURRENT_PROJECT_VERSION = 16;
 				DEVELOPMENT_ASSET_PATHS = "\"ChatAI/Preview Content\"";
 				DEVELOPMENT_TEAM = VGKDATW82L;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ChatAI/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Qwen AI";
+				INFOPLIST_KEY_CFBundleDisplayName = "Chatbun AI";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to allow you to take photos for ai chat.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to save images to your photo library.";
@@ -394,7 +394,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.14;
+				MARKETING_VERSION = 1.0.15;
 				PRODUCT_BUNDLE_IDENTIFIER = com.codbun.chat.ai;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

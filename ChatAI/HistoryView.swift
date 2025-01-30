@@ -8,6 +8,17 @@
 import SwiftUI
 
 struct HistoryView: View {
+    private func getAssistantInfo(type: AssistantModelType) -> AssistantModel {
+        switch type {
+        case .openAi: return AssistantModel(name: "ChatGPT", avatar: "chatgpt", apiModel: OpenAiApi.shared, type: .openAi)
+        case .claudeAi: return AssistantModel(name: "Claude AI", avatar: "claude", apiModel: ClaudeAiApi.shared, type: .claudeAi)
+        case .gemini: return AssistantModel(name: "Gemini", avatar: "gemini", apiModel: GeminiAiApi.shared, type: .gemini)
+        case .metaAi: return AssistantModel(name: "Meta AI", avatar: "meta", apiModel: MetaAiApi.shared, type: .metaAi)
+        case .deepSeek: return AssistantModel(name: "Meta AI", avatar: "meta", apiModel: MetaAiApi.shared, type: .metaAi)
+        case .qwen: return AssistantModel(name: "Qwen", avatar: "qwen", apiModel: QwenApi.shared, type: .qwen)
+        }
+    }
+    
     struct ChatHistoryCard: View {
         struct AssistantInfo {
             let name: String
@@ -15,20 +26,9 @@ struct HistoryView: View {
         }
         
         let history: ChatHistoryEntity
-        
-        private func getAssistantInfo() -> AssistantInfo {
-            switch history.assistantModelType {
-            case .openAi: return .init(name: "OpenAI", avatar: "chatgpt")
-            case .claudeAi: return .init(name: "Claude AI", avatar: "claude")
-            case .gemini: return .init(name: "Gemini", avatar: "gemini")
-            case .metaAi: return .init(name: "Meta AI", avatar: "meta")
-            case .deepSeek: return .init(name: "DeepSeek", avatar: "deepseek")
-            case .qwen: return .init(name: "Qwen", avatar: "qwen")
-            }
-        }
+        let info: AssistantModel
         
         var body: some View {
-            let info = getAssistantInfo()
             
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
@@ -152,11 +152,12 @@ struct HistoryView: View {
             ScrollView {
                 LazyVStack(spacing: 15) {
                     ForEach(appProvider.chatHistory.reversed()) { history in
+                        let info = getAssistantInfo(type: history.assistantModelType)
                         Button(action: {
                             impactFeedback.impactOccurred()
-                            appProvider.navigationPath.append(.chatView(history: history))
+                            appProvider.navigationPath.append(.chatView(model: info, history: history))
                         }) {
-                            ChatHistoryCard(history: history)
+                            ChatHistoryCard(history: history, info: info)
                         }
                     }
                 }

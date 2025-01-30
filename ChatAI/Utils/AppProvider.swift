@@ -45,27 +45,15 @@ class AppProvider: ObservableObject {
     @Published var messagesCount: Int = 0
     
     private let userDefaults = UserDefaults.standard
-    private let lastResetKey = "lastMessageResetDate"
     private let messageCountKey = "dailyMessageCount"
     
     private func loadMessagesCount() {
-        let lastResetDate = userDefaults.object(forKey: lastResetKey) as? Date ?? Date.distantPast
-        if !Calendar.current.isDateInToday(lastResetDate) {
-            resetDailyMessages()
-        } else {
-            messagesCount = userDefaults.integer(forKey: messageCountKey)
-        }
+        messagesCount = userDefaults.object(forKey: messageCountKey) as? Int ?? 25
     }
     
     func sendMessage() {
-        messagesCount += 1
+        messagesCount -= 1
         userDefaults.set(messagesCount, forKey: messageCountKey)
-    }
-    
-    private func resetDailyMessages() {
-        messagesCount = 0
-        userDefaults.set(messagesCount, forKey: messageCountKey)
-        userDefaults.set(Date(), forKey: lastResetKey)
     }
     
     private init() {

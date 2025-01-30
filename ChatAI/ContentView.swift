@@ -75,7 +75,7 @@ struct ContentView: View {
                             .scaledToFit()
                             .frame(width: 35, height: 35)
                         
-                        Text("Qwen AI")
+                        Text("Chatbun AI")
                             .font(.title2.bold())
                             .foregroundStyle(.white)
                     }
@@ -112,6 +112,7 @@ struct ContentView: View {
                 case .summaryView(let text): TextSummaryView(text: text)
                 case .imageDataView(let image): ImageDataView(data: image)
                 case .speachDetailsView(let filePath) : SpeachDetailsView(audioFilePath: filePath)
+                case .restoreView : RestoreView()
                 }
             }
         }

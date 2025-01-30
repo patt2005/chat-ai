@@ -57,7 +57,11 @@ class ChatViewModel: ObservableObject {
     func scrollToBottom(proxy: ScrollViewProxy) {
         guard let id = self.messages.last?.id else { return }
         
-        proxy.scrollTo(id, anchor: .bottomTrailing)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.easeOut(duration: 0.3)) {
+                proxy.scrollTo(id, anchor: .bottom)
+            }
+        }
     }
     
     @MainActor
@@ -169,6 +173,11 @@ struct ChatView: View {
                 .onAppear {
                     viewModel.scrollToBottom(proxy: reader)
                 }
+                .onChange(of: viewModel.messages) { _ in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        viewModel.scrollToBottom(proxy: reader)
+                    }
+                }
                 
                 VStack(alignment: .leading) {
                     if !viewModel.uploadedImages.isEmpty && viewModel.showImages {
@@ -223,6 +232,10 @@ struct ChatView: View {
                             ImagePicker(selectedImage: $viewModel.selectedImage, isImagePickerPresented: $showImagePicker, sourceType: viewModel.sourceType)
                         }
                         .padding(.leading, 10)
+                        .onAppear {
+                            guard let id = viewModel.messages.last?.id else { return }
+                            reader.scrollTo(id, anchor: .bottom)
+                        }
                         
                         TextField("Type a message...", text: $viewModel.inputText, axis: .vertical)
                             .lineLimit(1...4)
@@ -233,9 +246,7 @@ struct ChatView: View {
                             .focused($isFocused)
                         
                         Button(action: {
-                            print("\(viewModel.appProvider.isUserSubscribed)")
-                            print("\(viewModel.appProvider.messagesCount)")
-                            if viewModel.appProvider.isUserSubscribed || viewModel.appProvider.messagesCount <= 3 {
+                            if viewModel.appProvider.isUserSubscribed || viewModel.appProvider.messagesCount > 0 {
                                 Task {
                                     viewModel.appProvider.sendMessage()
                                     if !viewModel.inputText.isEmpty {

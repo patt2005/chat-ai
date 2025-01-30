@@ -30,21 +30,16 @@ class QwenApi: AiModel {
             "Authorization": "Bearer \(AppConstants.shared.qwenApiKey)"
         ]
         
-        var messages: [[String: Any]] = [
-            [
-                "role": "system",
-                "content": "You are Qwen, a helpful assistant. You can answer any questions that user has."
-            ]
-        ]
+        var messages: [[String: Any]] = []
         
         chatHistoryList.forEach { chatHistory in
             messages.append([
                 "role": "user",
-                "content": chatHistory.sendText
+                "content": [["type": "text", "text": chatHistory.sendText]]
             ])
             messages.append([
-                "role": "system",
-                "content": chatHistory.responseText ?? ""
+                "role": "assistant",
+                "content": [["type": "text", "text": chatHistory.responseText ?? ""]]
             ])
         }
         
@@ -53,9 +48,7 @@ class QwenApi: AiModel {
         ]
         
         imagesList.forEach { image in
-            userMessageContent.append(
-                ["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(image)"]]
-            )
+            userMessageContent.insert(["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(image)"]], at: 0)
         }
         
         messages.append([
@@ -64,13 +57,8 @@ class QwenApi: AiModel {
         ])
         
         let requestBody: [String: Any] = [
-            "model": "qwen-plus",
-            "max_tokens": 1024,
+            "model": "qwen-vl-max",
             "messages": messages,
-            "stop": [
-                "\n\n\n",
-                "<|im_end|>"
-            ],
             "stream": true,
         ]
         
@@ -84,6 +72,13 @@ class QwenApi: AiModel {
             throw ApiAnalysisError.invalidData
         }
         request.httpBody = jsonData
+        
+        if !AppProvider.shared.isUserSubscribed && !imagesList.isEmpty {
+            return AsyncThrowingStream<String, Error> { continuation in
+                continuation.yield("You need a Premium Subscription to upload images. Upgrade now to unlock this feature and enhance your experience!")
+                continuation.finish()
+            }
+        }
         
         let (result, response) = try await URLSession.shared.bytes(for: request)
         

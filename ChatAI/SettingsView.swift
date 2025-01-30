@@ -11,13 +11,30 @@ struct SettingsView: View {
     @State private var showDisclaimer: Bool = false
     @State private var isSharing = false
     @Environment(\.requestReview) var requestReview
-
+    
     var body: some View {
         ZStack {
             AppConstants.shared.backgroundColor
                 .edgesIgnoringSafeArea(.all)
-
+            
             Form {
+                if !AppProvider.shared.isUserSubscribed {
+                    Section(header: Text("Limits")) {
+                        Button(action: {
+                            
+                        }) {
+                            HStack {
+                                Image(systemName: "ellipsis.message")
+                                    .foregroundColor(AppConstants.shared.primaryColor)
+                                    .font(.title2)
+                                
+                                Text("Messages left: \(AppProvider.shared.messagesCount)")
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                        }
+                    }
+                }
+                
                 Section(header: Text("Feedback")) {
                     Button(action: {
                         isSharing = true
@@ -31,13 +48,13 @@ struct SettingsView: View {
                                 .padding(.leading, 8.5)
                         }
                     }
-
+                    
                     Button(action: {
                         let email = "mihai@codbun.com"
                         let subject = "Support Request"
                         let body = "Hi, I need help with..."
                         let mailtoURL = "mailto:\(email)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
-
+                        
                         if let url = URL(string: mailtoURL) {
                             if UIApplication.shared.canOpenURL(url) {
                                 UIApplication.shared.open(url)
@@ -54,7 +71,7 @@ struct SettingsView: View {
                                 .foregroundColor(.white.opacity(0.8))
                         }
                     }
-
+                    
                     Button(action: {
                         requestReview()
                     }) {
@@ -68,8 +85,20 @@ struct SettingsView: View {
                         }
                     }
                 }
-
+                
                 Section(header: Text("Legal")) {
+                    Button(action: {
+                        AppProvider.shared.navigationPath.append(.restoreView)
+                    }) {
+                        HStack {
+                            Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
+                                .foregroundColor(AppConstants.shared.primaryColor)
+                                .font(.title2)
+                            Text("Request Refund")
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                    
                     Link(destination: URL(string: "https://docs.google.com/document/d/1uth_ytIH6sL8eJu1w2loQkPMonuRYz-c1yq5xkVK71k/edit?usp=sharing")!) {
                         HStack {
                             Image(systemName: "lock.shield")
@@ -79,7 +108,7 @@ struct SettingsView: View {
                                 .foregroundColor(.white.opacity(0.8))
                         }
                     }
-
+                    
                     Link(destination: URL(string: "https://docs.google.com/document/d/1VbemNFyZpawCaigbmEPzndAt3HN-iH4VsMH0Znsi-gU/edit?usp=sharing")!) {
                         HStack {
                             Image(systemName: "doc.text")
@@ -90,7 +119,7 @@ struct SettingsView: View {
                         }
                     }
                 }
-
+                
                 Section(header: Text("About Us")) {
                     Link(destination: URL(string: "https://codbun.com/About")!) {
                         HStack {
@@ -101,7 +130,7 @@ struct SettingsView: View {
                                 .foregroundColor(.white.opacity(0.8))
                         }
                     }
-
+                    
                     Link(destination: URL(string: "https://codbun.com/Work")!) {
                         HStack {
                             Image(systemName: "app.badge")

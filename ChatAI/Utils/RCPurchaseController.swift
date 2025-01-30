@@ -43,6 +43,8 @@ final class RCPurchaseController: PurchaseController {
             let purchaseDate = Date()
             let revenueCatResult = try await Purchases.shared.purchase(product: storeProduct)
             if revenueCatResult.userCancelled {
+                await Superwall.shared.dismiss()
+                Superwall.shared.register(event: "special_offer_trigger")
                 return .cancelled
             } else {
                 if let transaction = revenueCatResult.transaction,
