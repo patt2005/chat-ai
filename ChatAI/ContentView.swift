@@ -76,7 +76,7 @@ struct ContentView: View {
                             .frame(width: 40, height: 40)
                             .cornerRadius(20)
                         
-                        Text("Chatbun AI")
+                        Text("chatbun")
                             .font(.title2.bold())
                             .foregroundStyle(.white)
                     }

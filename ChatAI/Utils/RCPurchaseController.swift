@@ -23,6 +23,9 @@ final class RCPurchaseController: PurchaseController {
             for await customerInfo in Purchases.shared.customerInfoStream {
                 let hasActiveSubscription = !customerInfo.entitlements.activeInCurrentEnvironment.isEmpty
                 if hasActiveSubscription {
+                    DispatchQueue.main.async {
+                        AppProvider.shared.isUserSubscribed = true
+                    }
                     Superwall.shared.subscriptionStatus = .active
                 } else {
                     Superwall.shared.subscriptionStatus = .inactive

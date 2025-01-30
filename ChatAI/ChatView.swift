@@ -246,25 +246,33 @@ struct ChatView: View {
                             .focused($isFocused)
                         
                         Button(action: {
-                            if viewModel.appProvider.isUserSubscribed || viewModel.appProvider.messagesCount > 0 {
-                                Task {
-                                    if !viewModel.inputText.isEmpty {
-                                        viewModel.appProvider.sendMessage()
-                                        await viewModel.sendTapped()
-                                        viewModel.scrollToBottom(proxy: reader)
+                            if !viewModel.isInteracting {
+                                if (AppProvider.shared.isUserSubscribed || AppProvider.shared.messagesCount > 0) {
+                                    Task {
+                                        if !viewModel.inputText.isEmpty {
+                                            AppProvider.shared.sendMessage()
+                                            await viewModel.sendTapped()
+                                            viewModel.scrollToBottom(proxy: reader)
+                                        }
                                     }
+                                } else {
+                                    Superwall.shared.register(event: "campaign_trigger")
                                 }
-                            } else {
-                                Superwall.shared.register(event: "campaign_trigger")
                             }
                         }) {
-                            Image(systemName: "paperplane.fill")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding(7)
-                                .background(AppConstants.shared.primaryColor)
-                                .clipShape(Circle())
-                                .padding(.trailing, 10)
+                            if !viewModel.isInteracting {
+                                Image(systemName: "paperplane.fill")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .padding(7)
+                                    .background(AppConstants.shared.primaryColor)
+                                    .clipShape(Circle())
+                                    .padding(.trailing, 10)
+                            } else {
+                                ProgressView()
+                                    .frame(width: 20, height: 20)
+                                    .padding(.trailing, 20)
+                            }
                         }
                     }
                 }

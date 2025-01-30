@@ -10,7 +10,10 @@ import SwiftUI
 struct SettingsView: View {
     @State private var showDisclaimer: Bool = false
     @State private var isSharing = false
+    
     @Environment(\.requestReview) var requestReview
+    
+    @ObservedObject private var provider = AppProvider.shared
     
     var body: some View {
         ZStack {
@@ -18,23 +21,6 @@ struct SettingsView: View {
                 .edgesIgnoringSafeArea(.all)
             
             Form {
-                if !AppProvider.shared.isUserSubscribed {
-                    Section(header: Text("Limits")) {
-                        Button(action: {
-                            
-                        }) {
-                            HStack {
-                                Image(systemName: "ellipsis.message")
-                                    .foregroundColor(AppConstants.shared.primaryColor)
-                                    .font(.title2)
-                                
-                                Text("Messages left: \(AppProvider.shared.messagesCount)")
-                                    .foregroundColor(.white.opacity(0.8))
-                            }
-                        }
-                    }
-                }
-                
                 Section(header: Text("Feedback")) {
                     Button(action: {
                         isSharing = true
@@ -88,7 +74,7 @@ struct SettingsView: View {
                 
                 Section(header: Text("Legal")) {
                     Button(action: {
-                        AppProvider.shared.navigationPath.append(.restoreView)
+                        provider.navigationPath.append(.restoreView)
                     }) {
                         HStack {
                             Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
@@ -121,6 +107,16 @@ struct SettingsView: View {
                 }
                 
                 Section(header: Text("About Us")) {
+                    Link(destination: URL(string: "https://www.linkedin.com/company/codbun")!) {
+                        HStack {
+                            Image(systemName: "person.2.fill")
+                                .foregroundColor(AppConstants.shared.primaryColor)
+                                .font(.title2)
+                            Text("Follow us")
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                    
                     Link(destination: URL(string: "https://codbun.com/About")!) {
                         HStack {
                             Image(systemName: "info.circle")

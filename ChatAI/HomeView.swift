@@ -90,7 +90,7 @@ struct HomeView: View {
     
     private let otherAiApps: [AppInfo] = [
         AppInfo(name: "Meme AI", image: "meme-ai", description: "Track trending meme coins in real-time with AI-powered insights, price alerts, and market analysis", appUrl: "https://apps.apple.com/us/app/meme-coin-tracker-dex-screener/id6738891806"),
-        AppInfo(name: "Learn AI", image: "learn-ai", description: "An interactive AI-powered educational app designed for kids to learn coding, problem-solving, and critical thinking", appUrl: "https://apps.apple.com/us/app/learnai-%C3%AEnva%C8%9B%C4%83-limba-rom%C3%A2n%C4%83/id6738118898"),
+        //        AppInfo(name: "Learn AI", image: "learn-ai", description: "An interactive AI-powered educational app designed for kids to learn coding, problem-solving, and critical thinking", appUrl: "https://apps.apple.com/us/app/learnai-%C3%AEnva%C8%9B%C4%83-limba-rom%C3%A2n%C4%83/id6738118898"),
         AppInfo(name: "Motivation AI", image: "motivation", description: "Stay inspired every day with personalized AI-generated motivational quotes and life-changing affirmations", appUrl: "https://apps.apple.com/us/app/motivation-stoic-daily-quotes/id6740817263"),
     ]
     
@@ -163,10 +163,73 @@ struct HomeView: View {
     var body: some View {
         ZStack {
             ScrollView(showsIndicators: false) {
+                if !appProvider.isUserSubscribed {
+                    VStack(spacing: 8) {
+                        if appProvider.messagesCount == 0 {
+                            VStack(spacing: 8) {
+                                Text("Daily Limit Reached 🚀")
+                                    .font(.title3.bold())
+                                    .foregroundStyle(.white)
+                                
+                                Text("You've used all 10 free messages for today. Subscribe to Pro for unlimited access!")
+                                    .font(.caption)
+                                    .foregroundStyle(.gray)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 10)
+                                
+                                Button(action: {
+                                    Superwall.shared.register(event: "campaign_trigger")
+                                }) {
+                                    Text("Upgrade to Pro")
+                                        .font(.subheadline.bold())
+                                        .foregroundStyle(.white)
+                                        .padding(.vertical, 10)
+                                        .frame(maxWidth: .infinity)
+                                        .background(Color.purple)
+                                        .cornerRadius(12)
+                                }
+                                .padding(.horizontal, 15)
+                            }
+                        } else {
+                            Text("Free Messages Left Today")
+                                .font(.title3.bold())
+                                .foregroundStyle(.white)
+                            
+                            GeometryReader { geometry in
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(height: 8)
+                                    
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(appProvider.messagesCount > 0 ? Color.green : Color.red)
+                                        .frame(width: geometry.size.width * CGFloat(appProvider.messagesCount) / CGFloat(10), height: 8)
+                                }
+                            }
+                            .frame(height: 8)
+                            
+                            Text("\(appProvider.messagesCount) of \(10) messages remaining")
+                                .font(.caption)
+                                .foregroundStyle(.gray)
+                        }
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        LinearGradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.5)],
+                                       startPoint: .topLeading,
+                                       endPoint: .bottomTrailing)
+                    )
+                    .cornerRadius(15)
+                    .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 3)
+                    .padding(.horizontal, 19)
+                    .padding(.top, 15)
+                }
+                
                 VStack(alignment: .leading) {
                     Text("Assistants 🤖")
                         .font(.title2.bold())
-                        .padding(.top, 15)
+                        .padding(.top, 8)
                         .padding(.horizontal, 19)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
