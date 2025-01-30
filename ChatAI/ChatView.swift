@@ -248,8 +248,8 @@ struct ChatView: View {
                         Button(action: {
                             if viewModel.appProvider.isUserSubscribed || viewModel.appProvider.messagesCount > 0 {
                                 Task {
-                                    viewModel.appProvider.sendMessage()
                                     if !viewModel.inputText.isEmpty {
+                                        viewModel.appProvider.sendMessage()
                                         await viewModel.sendTapped()
                                         viewModel.scrollToBottom(proxy: reader)
                                     }

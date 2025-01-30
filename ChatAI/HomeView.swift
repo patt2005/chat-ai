@@ -22,6 +22,13 @@ struct HomeView: View {
         let prompt: String
     }
     
+    struct AppInfo {
+        let name: String
+        let image: String
+        let description: String
+        let appUrl: String
+    }
+    
     @ObservedObject private var appProvider = AppProvider.shared
     
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
@@ -81,6 +88,12 @@ struct HomeView: View {
         AssistantModel(name: "Meta AI", avatar: "meta", apiModel: MetaAiApi.shared, type: .metaAi),
     ]
     
+    private let otherAiApps: [AppInfo] = [
+        AppInfo(name: "Meme AI", image: "meme-ai", description: "Track trending meme coins in real-time with AI-powered insights, price alerts, and market analysis", appUrl: "https://apps.apple.com/us/app/meme-coin-tracker-dex-screener/id6738891806"),
+        AppInfo(name: "Learn AI", image: "learn-ai", description: "An interactive AI-powered educational app designed for kids to learn coding, problem-solving, and critical thinking", appUrl: "https://apps.apple.com/us/app/learnai-%C3%AEnva%C8%9B%C4%83-limba-rom%C3%A2n%C4%83/id6738118898"),
+        AppInfo(name: "Motivation AI", image: "motivation", description: "Stay inspired every day with personalized AI-generated motivational quotes and life-changing affirmations", appUrl: "https://apps.apple.com/us/app/motivation-stoic-daily-quotes/id6740817263"),
+    ]
+    
     private let popularPrompts: [String] = [
         "Explain blockchain technology in simple terms.",
         "Write a creative story about a futuristic world where memes control the economy.",
@@ -90,6 +103,38 @@ struct HomeView: View {
         "Provide a step-by-step guide to start trading meme coins.",
         "What are the potential risks and rewards of investing in meme coins?"
     ]
+    
+    private func appInfoCard(info: AppInfo) -> some View {
+        Link(destination: URL(string: info.appUrl)!) {
+            VStack(spacing: 10) {
+                Image(info.image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 2)
+                    .padding(.top, 5)
+                
+                VStack(alignment: .center, spacing: 6) {
+                    Text(info.name)
+                        .font(.title3.bold())
+                        .foregroundStyle(.white)
+                    
+                    Text(info.description)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.gray)
+                        .padding(.horizontal, 10)
+                        .lineLimit(4)
+                }
+                .padding(.bottom, 12)
+            }
+            .frame(width: 180)
+            .background(AppConstants.shared.grayColor)
+            .cornerRadius(15)
+            .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+        }
+    }
     
     private func featureCard(featureInfo: PremiumFeature) -> some View {
         VStack(spacing: 0) {
@@ -259,6 +304,27 @@ struct HomeView: View {
                                     .shadow(color: AppConstants.shared.grayColor.opacity(0.2), radius: 4, x: 0, y: 2)
                                     .padding(.vertical, 1)
                                 }
+                            }
+                            
+                            Rectangle()
+                                .foregroundStyle(.clear)
+                                .frame(width: 12)
+                        }
+                    }
+                    
+                    Text("Other AI tools you\nmight like ⚙️")
+                        .font(.title2.bold())
+                        .padding(.top, 15)
+                        .padding(.horizontal, 19)
+                    
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            Rectangle()
+                                .foregroundStyle(.clear)
+                                .frame(width: 12)
+                            
+                            ForEach(otherAiApps, id: \.name) { info in
+                                appInfoCard(info: info)
                             }
                             
                             Rectangle()

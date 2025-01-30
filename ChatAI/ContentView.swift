@@ -73,7 +73,8 @@ struct ContentView: View {
                         Image("icon")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 35, height: 35)
+                            .frame(width: 40, height: 40)
+                            .cornerRadius(20)
                         
                         Text("Chatbun AI")
                             .font(.title2.bold())
