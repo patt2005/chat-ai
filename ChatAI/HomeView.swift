@@ -319,11 +319,6 @@ struct HomeView: View {
                         .font(.title2.bold())
                         .padding(.top, 15)
                         .padding(.horizontal, 19)
-                        .onAppear {
-                            if appProvider.isFirstOpen {
-                                requestReview()
-                            }
-                        }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
