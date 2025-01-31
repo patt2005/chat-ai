@@ -80,7 +80,7 @@ struct SettingsView: View {
                             Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
-                            Text("Request Refund")
+                            Text("Restore Purchase")
                                 .foregroundColor(.white.opacity(0.8))
                         }
                     }
@@ -111,7 +111,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "person.2.fill")
                                 .foregroundColor(AppConstants.shared.primaryColor)
-                                .font(.title2)
+                                .font(.headline)
                             Text("Follow us")
                                 .foregroundColor(.white.opacity(0.8))
                         }
@@ -142,7 +142,7 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $isSharing) {
             ActivityView(activityItems: [
-                "https://apps.apple.com/us/app/meme-ai-meme-coin-tracker-app/id6738891806"])
+                "https://apps.apple.com/us/app/chatbun-ai-chatbot-assistant/id6740526710"])
         }
         .preferredColorScheme(.dark)
     }
