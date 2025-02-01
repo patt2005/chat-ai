@@ -85,7 +85,7 @@ struct ContentView: View {
                 if (!appProvider.isUserSubscribed) {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button(action: {
-                            Superwall.shared.register(event: "campaign_trigger")
+                            Superwall.shared.register(event: "test")
                         }) {
                             HStack(spacing: 5) {
                                 Image(systemName: "crown.fill")

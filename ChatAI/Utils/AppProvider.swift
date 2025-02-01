@@ -48,7 +48,7 @@ class AppProvider: ObservableObject {
     
     private let messageCountKey = "dailyMessageCount"
     private let lastResetKey = "lastResetDate"
-    private let maxDailyMessages = 10
+    private let maxDailyMessages = 100
     
     private func loadMessagesCount() {
         let lastResetDate = userDefaults.object(forKey: lastResetKey) as? Date ?? Date.distantPast

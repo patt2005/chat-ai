@@ -23,11 +23,12 @@ class QwenApi: AiModel {
     }
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error> {
-        let url = URL(string: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions")!
+        guard let url = URL(string: "http://localhost:5142/api/qwen/chat") else {
+            throw URLError(.badURL)
+        }
         
         let headers = [
             "Content-Type": "application/json",
-            "Authorization": "Bearer \(AppConstants.shared.qwenApiKey)"
         ]
         
         var messages: [[String: Any]] = []

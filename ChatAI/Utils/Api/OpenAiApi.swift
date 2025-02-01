@@ -37,28 +37,22 @@ class OpenAiApi: AiModel {
     static var shared: any AiModel = OpenAiApi()
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error> {
-        let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+        let url = URL(string: "http://localhost:5142/api/chatgpt/chat")!
         
         let headers = [
             "Content-Type": "application/json",
-            "Authorization": "Bearer \(AppConstants.shared.openAiApiKey)"
         ]
         
-        var messages: [[String: Any]] = [
-            [
-                "role": "developer",
-                "content": "You are Chat GPT, a helpful assistant. You can answer any questions that user has."
-            ]
-        ]
+        var messages: [[String: Any]] = []
         
         chatHistoryList.forEach { chatHistory in
             messages.append([
                 "role": "user",
-                "content": chatHistory.sendText
+                "content": chatHistory.sendText,
             ])
             messages.append([
                 "role": "developer",
-                "content": chatHistory.responseText ?? ""
+                "content": chatHistory.responseText ?? "",
             ])
         }
         
@@ -81,10 +75,6 @@ class OpenAiApi: AiModel {
             "model": "gpt-4o-mini",
             "max_tokens": 1024,
             "messages": messages,
-            "stop": [
-                "\n\n\n",
-                "<|im_end|>"
-            ],
             "stream": true,
         ]
         
@@ -98,6 +88,8 @@ class OpenAiApi: AiModel {
             throw ApiAnalysisError.invalidData
         }
         request.httpBody = jsonData
+        
+        print(String(data: jsonData, encoding: .utf8) ?? "")
         
         let (result, response) = try await URLSession.shared.bytes(for: request)
         
