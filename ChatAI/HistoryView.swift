@@ -14,7 +14,6 @@ struct HistoryView: View {
         case .claudeAi: return AssistantModel(name: "Claude AI", avatar: "claude", apiModel: ClaudeAiApi.shared, type: .claudeAi)
         case .gemini: return AssistantModel(name: "Gemini", avatar: "gemini", apiModel: GeminiAiApi.shared, type: .gemini)
         case .metaAi: return AssistantModel(name: "Meta AI", avatar: "meta", apiModel: MetaAiApi.shared, type: .metaAi)
-        case .deepSeek: return AssistantModel(name: "Meta AI", avatar: "meta", apiModel: MetaAiApi.shared, type: .metaAi)
         case .qwen: return AssistantModel(name: "Qwen", avatar: "qwen", apiModel: QwenApi.shared, type: .qwen)
         }
     }

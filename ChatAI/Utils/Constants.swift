@@ -60,7 +60,6 @@ enum AssistantModelType: String, Codable {
     case claudeAi = "claudeAi"
     case gemini = "gemini"
     case metaAi = "metaAi"
-    case deepSeek = "deepSeek"
     case qwen = "qwen"
 }
 
@@ -114,7 +113,6 @@ extension UIImage {
     ///   - height: A new height in pixels.
     /// - Returns: Resized image.
     func resize(_ width: Int, _ height: Int) -> UIImage {
-        // Keep aspect ratio
         let maxSize = CGSize(width: width, height: height)
 
         let availableRect = AVFoundation.AVMakeRect(
@@ -123,12 +121,10 @@ extension UIImage {
         )
         let targetSize = availableRect.size
 
-        // Set scale of renderer so that 1pt == 1px
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
 
-        // Resize the image
         let resized = renderer.image { _ in
             self.draw(in: CGRect(origin: .zero, size: targetSize))
         }
