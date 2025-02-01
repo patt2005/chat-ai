@@ -114,6 +114,7 @@ struct ContentView: View {
                 case .imageDataView(let image): ImageDataView(data: image)
                 case .speachDetailsView(let filePath) : SpeachDetailsView(audioFilePath: filePath)
                 case .restoreView : RestoreView()
+                case .manageSubscriptionView : ManageSubscriptionView()
                 }
             }
         }

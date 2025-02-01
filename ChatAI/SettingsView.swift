@@ -38,7 +38,7 @@ struct SettingsView: View {
                     Button(action: {
                         let email = "mihai@codbun.com"
                         let subject = "Support Request"
-                        let body = "Hi, I need help with..."
+                        let body = "Hi, I need help with... (Qwently)"
                         let mailtoURL = "mailto:\(email)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
                         
                         if let url = URL(string: mailtoURL) {
@@ -72,40 +72,6 @@ struct SettingsView: View {
                     }
                 }
                 
-                Section(header: Text("Legal")) {
-                    Button(action: {
-                        provider.navigationPath.append(.restoreView)
-                    }) {
-                        HStack {
-                            Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
-                                .foregroundColor(AppConstants.shared.primaryColor)
-                                .font(.title2)
-                            Text("Restore Purchase")
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                    }
-                    
-                    Link(destination: URL(string: "https://docs.google.com/document/d/1uth_ytIH6sL8eJu1w2loQkPMonuRYz-c1yq5xkVK71k/edit?usp=sharing")!) {
-                        HStack {
-                            Image(systemName: "lock.shield")
-                                .foregroundColor(AppConstants.shared.primaryColor)
-                                .font(.title2)
-                            Text("Privacy Policy")
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                    }
-                    
-                    Link(destination: URL(string: "https://docs.google.com/document/d/1VbemNFyZpawCaigbmEPzndAt3HN-iH4VsMH0Znsi-gU/edit?usp=sharing")!) {
-                        HStack {
-                            Image(systemName: "doc.text")
-                                .foregroundColor(AppConstants.shared.primaryColor)
-                                .font(.title2)
-                            Text("Terms of Use")
-                                .foregroundColor(.white.opacity(0.8))
-                        }
-                    }
-                }
-                
                 Section(header: Text("About Us")) {
                     Link(destination: URL(string: "https://www.linkedin.com/company/codbun")!) {
                         HStack {
@@ -133,6 +99,52 @@ struct SettingsView: View {
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title2)
                             Text("Our Apps")
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                }
+                
+                Section(header: Text("Legal")) {
+                    Button(action: {
+                        provider.navigationPath.append(.restoreView)
+                    }) {
+                        HStack {
+                            Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
+                                .foregroundColor(AppConstants.shared.primaryColor)
+                                .font(.title3)
+                            Text("Restore Purchase")
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                    
+                    Link(destination: URL(string: "https://docs.google.com/document/d/1uth_ytIH6sL8eJu1w2loQkPMonuRYz-c1yq5xkVK71k/edit?usp=sharing")!) {
+                        HStack {
+                            Image(systemName: "lock.shield")
+                                .foregroundColor(AppConstants.shared.primaryColor)
+                                .font(.title2)
+                            Text("Privacy Policy")
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                    
+                    Link(destination: URL(string: "https://docs.google.com/document/d/1VbemNFyZpawCaigbmEPzndAt3HN-iH4VsMH0Znsi-gU/edit?usp=sharing")!) {
+                        HStack {
+                            Image(systemName: "doc.text")
+                                .foregroundColor(AppConstants.shared.primaryColor)
+                                .font(.title2)
+                            Text("Terms of Use")
+                                .foregroundColor(.white.opacity(0.8))
+                        }
+                    }
+                    
+                    Button(action: {
+                        provider.navigationPath.append(.manageSubscriptionView)
+                    }) {
+                        HStack {
+                            Image(systemName: "creditcard.fill")
+                                .foregroundColor(AppConstants.shared.primaryColor)
+                                .font(.headline)
+                            Text("Manage Subscription")
                                 .foregroundColor(.white.opacity(0.8))
                         }
                     }

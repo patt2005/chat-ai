@@ -54,7 +54,7 @@ struct HistoryView: View {
                     .background(Color.gray)
                 
                 VStack(alignment: .leading, spacing: 6) {
-                    ForEach(history.messages.prefix(2).reversed()) { message in
+                    ForEach(history.messages.suffix(2).reversed()) { message in
                         Text(message.sendText)
                             .font(.subheadline)
                             .foregroundColor(.white)

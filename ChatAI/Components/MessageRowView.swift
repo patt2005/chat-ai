@@ -97,21 +97,23 @@ struct MessageRowView: View {
                     }
                 }
                 
-                if let error = responseError {
-                    Text("Error: \(error)")
-                        .foregroundStyle(.red)
-                        .multilineTextAlignment(.leading)
-                    
-                    Button(action: {
-                        retryCallback(messageRow)
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.clockwise")
-                                .foregroundStyle(.white)
-                                .frame(width: 16, height: 16)
-                            
-                            Text("Try again")
-                                .foregroundStyle(.white)
+                if responseError != nil {
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("Something went wrong. Please try again.")
+                            .foregroundStyle(.red)
+                            .multilineTextAlignment(.leading)
+                        
+                        Button(action: {
+                            retryCallback(messageRow)
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.clockwise")
+                                    .foregroundStyle(.white)
+                                    .frame(width: 16, height: 16)
+                                
+                                Text("Try again")
+                                    .foregroundStyle(.white)
+                            }
                         }
                     }
                 }

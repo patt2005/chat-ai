@@ -77,6 +77,7 @@ enum NavigationDestination: Hashable {
     case imageDataView(data: ImageGenerationData)
     case speachDetailsView(audioFilePath: String)
     case restoreView
+    case manageSubscriptionView
 }
 
 extension Color {
