@@ -52,7 +52,7 @@ final class RCPurchaseController: PurchaseController {
             } else {
                 if let transaction = revenueCatResult.transaction,
                    purchaseDate > transaction.purchaseDate {
-                    AppProvider.shared.isUserSubscribed = false
+                    AppProvider.shared.isUserSubscribed = true
                     return .restored
                 } else {
                     AppProvider.shared.isUserSubscribed = true

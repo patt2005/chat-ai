@@ -14,7 +14,7 @@ class AppConstants {
     static let shared = AppConstants()
     
     let appCode = "chat-ai"
-    let appVersion = "1.0.12"
+    let appVersion = "1.0.20"
     
     let backgroundColor = Color("BackgroundColor")
     let primaryColor = Color("AccentColor")
@@ -77,6 +77,7 @@ enum NavigationDestination: Hashable {
     case speachDetailsView(audioFilePath: String)
     case restoreView
     case manageSubscriptionView
+    case chatPdfView(pdfData: Data)
 }
 
 extension Color {

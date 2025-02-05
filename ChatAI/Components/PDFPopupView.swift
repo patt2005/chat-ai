@@ -9,9 +9,7 @@ import SwiftUI
 
 struct PDFPopupView: View {
     @Binding var isPresented: Bool
-    @Binding var isLoading: Bool
     @Binding var showError: Bool
-    
     @State private var pdfFileData: Data? = nil
     @State private var pdfFilePath: URL? = nil
     
@@ -33,7 +31,7 @@ struct PDFPopupView: View {
                 
                 VStack(spacing: 20) {
                     HStack {
-                        Text("Get PDF Summary")
+                        Text("Ask Your PDF")
                             .font(.headline)
                             .fontWeight(.bold)
                         Spacer()
@@ -79,7 +77,7 @@ struct PDFPopupView: View {
                         }
                     }
                     
-                    Text("Generate a concise summary of your uploaded PDF.")
+                    Text("Ask a question and get insights from your uploaded PDF.")
                         .font(.subheadline)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
@@ -89,25 +87,13 @@ struct PDFPopupView: View {
                         
                         withAnimation {
                             isPresented = false
-                            isLoading = true
                         }
                         
-                        Task {
-                            do {
-                                let response = try await GeminiAiApi().getPDFSummary(pdfData: pdfFileData)
-                                
-                                appProvider.navigationPath.append(.summaryView(text: response))
-                            } catch {
-                                print("Caught error: \(error.localizedDescription)")
-                                showError = true
-                            }
-                            
-                            isLoading = false
-                            self.pdfFileData = nil
-                            self.pdfFilePath = nil
-                        }
+                        appProvider.navigationPath.append(.chatPdfView(pdfData: pdfFileData))
+                        self.pdfFileData = nil
+                        self.pdfFilePath = nil
                     }) {
-                        Text("Generate Summary")
+                        Text("Ask PDF")
                             .font(.headline)
                             .frame(maxWidth: .infinity)
                             .padding()

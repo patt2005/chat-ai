@@ -22,6 +22,24 @@ class QwenApi: AiModel {
         let choices: [Choice]
     }
     
+    func cleanResponseText(_ text: String) -> String {
+        var cleanedText = text
+        
+        cleanedText = cleanedText.replacingOccurrences(of: "\\*\\*(.*?)\\*\\*", with: "$1", options: .regularExpression)
+        cleanedText = cleanedText.replacingOccurrences(of: "\\*(.*?)\\*", with: "$1", options: .regularExpression)
+        
+        cleanedText = cleanedText.replacingOccurrences(of: "####\\s*", with: "", options: .regularExpression)
+        cleanedText = cleanedText.replacingOccurrences(of: "###\\s*", with: "", options: .regularExpression)
+        cleanedText = cleanedText.replacingOccurrences(of: "##\\s*", with: "", options: .regularExpression)
+        cleanedText = cleanedText.replacingOccurrences(of: "#\\s*", with: "", options: .regularExpression)
+        
+        cleanedText = cleanedText.replacingOccurrences(of: "(?m)^-\\s", with: "• ", options: .regularExpression)
+        
+        cleanedText = cleanedText.replacingOccurrences(of: "\n{2,}", with: "\n", options: .regularExpression)
+        
+        return cleanedText
+    }
+    
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error> {
         let url = URL(string: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions")!
         
@@ -95,7 +113,7 @@ class QwenApi: AiModel {
                 do {
                     for try await line in result.lines {
                         if line.hasPrefix("data: "), let data = line.dropFirst(6).data(using: .utf8), let response = try? JSONDecoder().decode(CompletionResponse.self, from: data), let text = response.choices.first?.delta.content {
-                            continuation.yield(text.replacingOccurrences(of: "**", with: ""))
+                            continuation.yield(cleanResponseText(text))
                         }
                     }
                     continuation.finish()

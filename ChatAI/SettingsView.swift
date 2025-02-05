@@ -38,7 +38,7 @@ struct SettingsView: View {
                     Button(action: {
                         let email = "mihai@codbun.com"
                         let subject = "Support Request"
-                        let body = "Hi, I need help with... (Qwently)"
+                        let body = "Hi, I need help with... (Qwently \(AppConstants.shared.appVersion))"
                         let mailtoURL = "mailto:\(email)?subject=\(subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")&body=\(body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")"
                         
                         if let url = URL(string: mailtoURL) {
@@ -109,7 +109,7 @@ struct SettingsView: View {
                         provider.navigationPath.append(.restoreView)
                     }) {
                         HStack {
-                            Image(systemName: "dollarsign.arrow.trianglehead.counterclockwise.rotate.90")
+                            Image(systemName: "dollarsign.arrow.circlepath")
                                 .foregroundColor(AppConstants.shared.primaryColor)
                                 .font(.title3)
                             Text("Restore Purchase")

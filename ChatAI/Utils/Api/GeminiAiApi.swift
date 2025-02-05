@@ -8,9 +8,24 @@
 import Foundation
 import FirebaseVertexAI
 import SwiftUI
+import PDFKit
 
 class GeminiAiApi: AiModel {
     static var shared: any AiModel = GeminiAiApi()
+    
+    private func extractTextFromPDF(pdfData: Data) -> String {
+        guard let pdfDocument = PDFDocument(data: pdfData) else { return "" }
+        
+        var extractedText = ""
+        
+        for pageIndex in 0..<pdfDocument.pageCount {
+            if let page = pdfDocument.page(at: pageIndex), let pageText = page.string {
+                extractedText += pageText + "\n\n"
+            }
+        }
+        
+        return extractedText
+    }
     
     private let vertex = VertexAI.vertexAI()
     
@@ -37,7 +52,7 @@ class GeminiAiApi: AiModel {
             Task(priority: .userInitiated) {
                 for try await line in contentStream {
                     if let text = line.text {
-                        continuation.yield(text.replacingOccurrences(of: "**", with: ""))
+                        continuation.yield(cleanResponseText(text))
                     }
                 }
                 continuation.finish()
@@ -61,15 +76,34 @@ extension GeminiAiApi {
         return filteredText ?? ""
     }
     
-    func getPDFSummary(pdfData: Data) async throws -> String {
+    private func cleanResponseText(_ text: String) -> String {
+        var cleanedText = text
+        
+        cleanedText = cleanedText.replacingOccurrences(of: "\\*\\*(.*?)\\*\\*", with: "$1", options: .regularExpression)
+        cleanedText = cleanedText.replacingOccurrences(of: "\\*(.*?)\\*", with: "$1", options: .regularExpression)
+        
+        cleanedText = cleanedText.replacingOccurrences(of: "(?m)^\\*\\s", with: "• ", options: .regularExpression)
+        
+        return cleanedText
+    }
+    
+    func getPDFSummary(pdfData: Data, prompt: String) async throws -> AsyncThrowingStream<String, Error> {
         let model = vertex.generativeModel(modelName: "gemini-1.5-flash")
         
-        let pdfFilePart = InlineDataPart(data: pdfData, mimeType: "application/pdf")
+        let fullText = extractTextFromPDF(pdfData: pdfData)
         
-        let prompt = "You are an AI assistant that summarizes PDF documents. Extract key points concisely."
+        let contentStream = try model.generateContentStream("\(prompt) \n\n PDF Text: \n\n \(fullText)")
         
-        let contentStream = try await model.generateContent(pdfFilePart, prompt)
-        
-        return contentStream.text?.replacingOccurrences(of: "**", with: "") ?? ""
+        return AsyncThrowingStream<String, Error> { continuation in
+            Task(priority: .userInitiated) {
+                for try await line in contentStream {
+                    if let text = line.text {
+                        let cleanedText = cleanResponseText(text)
+                        continuation.yield(cleanedText)
+                    }
+                }
+                continuation.finish()
+            }
+        }
     }
 }

@@ -62,7 +62,7 @@ struct ContentView: View {
                     .tabItem { Label("Chat", systemImage: "ellipsis.message" ) }.tag(0)
                 
                 HistoryView()
-                    .tabItem { Label("History", systemImage: "clock.arrow.trianglehead.counterclockwise.rotate.90") }.tag(1)
+                    .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }.tag(1)
                 
                 SettingsView()
                     .tabItem { Label("Settings", systemImage: "gearshape") }.tag(2)
@@ -115,6 +115,7 @@ struct ContentView: View {
                 case .speachDetailsView(let filePath) : SpeachDetailsView(audioFilePath: filePath)
                 case .restoreView : RestoreView()
                 case .manageSubscriptionView : ManageSubscriptionView()
+                case .chatPdfView(let pdfData) : ChatPdfView(pdfData: pdfData)
                 }
             }
         }

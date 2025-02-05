@@ -6,6 +6,49 @@
 //
 
 import SwiftUI
+import AVFoundation
+import Combine
+
+struct GenerationVoice: Hashable {
+    let name: String
+    var audioURL: URL {
+        return URL(string: "https://cdn.openai.com/API/docs/audio/\(name).wav")!
+    }
+}
+
+class TextTOSpeachPopupViewModel: ObservableObject {
+    @Published var selectedVoice: GenerationVoice = GenerationVoice(name: "alloy")
+    
+    private var audioPlayer: AVPlayer?
+    private var playbackTimer: Timer?
+
+    private var cancellables = Set<AnyCancellable>()
+    
+    func playAudio(url: URL) {
+        if let player = audioPlayer, player.timeControlStatus == .playing {
+            player.pause()
+        }
+        
+        let playerItem = AVPlayerItem(url: url)
+        audioPlayer = AVPlayer(playerItem: playerItem)
+        
+        audioPlayer?.play()
+        
+        playbackTimer?.invalidate()
+        playbackTimer = Timer.scheduledTimer(withTimeInterval: 3.5, repeats: false) { _ in
+            self.audioPlayer?.pause()
+        }
+    }
+    
+    init() {
+        $selectedVoice
+            .dropFirst()
+            .sink { voice in
+                self.playAudio(url: voice.audioURL)
+            }
+            .store(in: &cancellables)
+    }
+}
 
 struct TextToSpeachPopupView: View {
     @Binding var isPresented: Bool
@@ -13,11 +56,13 @@ struct TextToSpeachPopupView: View {
     @Binding var showError: Bool
     
     @State private var inputText: String = ""
-    @State private var selectedVoice: String = "alloy"
     
-    let voices = ["alloy", "ash", "coral", "echo", "fable", "onyx", "nova", "sage", "shimmer"]
+    let voices: [GenerationVoice] = [GenerationVoice(name: "alloy"), GenerationVoice(name: "ash"), GenerationVoice(name: "coral"), GenerationVoice(name: "echo"), GenerationVoice(name: "fable"), GenerationVoice(name: "onyx"), GenerationVoice(name: "nova"), GenerationVoice(name:  "sage"), GenerationVoice(name: "shimmer")
+    ]
     
     @ObservedObject private var appProvider = AppProvider.shared
+    
+    @StateObject private var viewModel = TextTOSpeachPopupViewModel()
     
     var body: some View {
         ZStack {
@@ -31,7 +76,7 @@ struct TextToSpeachPopupView: View {
                     }
                     .transition(.opacity)
                 
-                VStack(spacing: 20) {
+                VStack(spacing: 15) {
                     HStack {
                         Text("Text to Speech")
                             .font(.headline)
@@ -61,22 +106,46 @@ struct TextToSpeachPopupView: View {
                             }
                         )
                     
-                    HStack {
-                        Text("Select Voice")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-                        
-                        Spacer()
-                        
-                        Picker("Selected Voice", selection: $selectedVoice) {
-                            ForEach(voices, id: \.self) { voice in
-                                Text(voice.capitalized).tag(voice)
+                    ScrollView {
+                        LazyVStack(spacing: 0) {
+                            ForEach(voices, id: \.name) { voice in
+                                Button(action: {
+                                    viewModel.selectedVoice = voice
+                                }) {
+                                    HStack {
+                                        Text(voice.name)
+                                            .font(.body)
+                                            .padding(.leading, 5)
+                                            .foregroundStyle(.white)
+                                        
+                                        if viewModel.selectedVoice.name == voice.name {
+                                            Image(systemName: "checkmark.circle.fill")
+                                                .foregroundColor(.green)
+                                        }
+                                        
+                                        Rectangle()
+                                            .frame(maxWidth: .infinity)
+                                            .foregroundStyle(.clear)
+                                        
+                                        Button(action: {
+                                            viewModel.playAudio(url: voice.audioURL)
+                                        }) {
+                                            Image(systemName: "play.circle.fill")
+                                                .foregroundColor(AppConstants.shared.primaryColor)
+                                                .font(.title2)
+                                        }
+                                    }
+                                    .padding()
+                                    .frame(maxWidth: .infinity)
+                                    .background(viewModel.selectedVoice.name == voice.name ? Color.blue.opacity(0.2) : Color.clear)
+                                    .cornerRadius(10)
+                                }
                             }
                         }
-                        .padding(4)
-                        .background(Color(.secondarySystemBackground))
-                        .cornerRadius(10)
                     }
+                    .frame(height: 172)
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(10)
                     
                     Text("Convert text to speech using the selected voice.")
                         .font(.subheadline)
@@ -93,7 +162,7 @@ struct TextToSpeachPopupView: View {
                         
                         Task {
                             do {
-                                let audioFile = try await OpenAiApi().generateSpeach(inputText, voice: selectedVoice)
+                                let audioFile = try await OpenAiApi().generateSpeach(inputText, voice: viewModel.selectedVoice.name)
                                 
                                 appProvider.navigationPath.append(.speachDetailsView(audioFilePath: audioFile))
                             } catch {

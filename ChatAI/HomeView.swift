@@ -90,8 +90,8 @@ struct HomeView: View {
     
     private let otherAiApps: [AppInfo] = [
         AppInfo(name: "Meme AI", image: "meme-ai", description: "Track trending meme coins in real-time with AI-powered insights, price alerts, and market analysis", appUrl: "https://apps.apple.com/us/app/meme-coin-tracker-dex-screener/id6738891806"),
-        //        AppInfo(name: "Learn AI", image: "learn-ai", description: "An interactive AI-powered educational app designed for kids to learn coding, problem-solving, and critical thinking", appUrl: "https://apps.apple.com/us/app/learnai-%C3%AEnva%C8%9B%C4%83-limba-rom%C3%A2n%C4%83/id6738118898"),
         AppInfo(name: "Motivation AI", image: "motivation", description: "Stay inspired every day with personalized AI-generated motivational quotes and life-changing affirmations", appUrl: "https://apps.apple.com/us/app/motivation-stoic-daily-quotes/id6740817263"),
+        AppInfo(name: "Learn AI", image: "learn-ai", description: "An interactive AI-powered educational app designed for kids to learn coding, problem-solving, and critical thinking", appUrl: "https://apps.apple.com/us/app/learnai-%C3%AEnva%C8%9B%C4%83-limba-rom%C3%A2n%C4%83/id6738118898"),
     ]
     
     private let popularPrompts: [String] = [
@@ -282,7 +282,7 @@ struct HomeView: View {
                                 premiumFeatures.append(contentsOf: [
                                     PremiumFeature(title: "Image generation", image: "t-i", description: "Create images with prompts", action: { showImagePopup = true }),
                                     PremiumFeature(title: "YouTube summary", image: "y-t", description: "Summarize text from a video", action: { showSummaryPopup = true }),
-                                    PremiumFeature(title: "PDF summary", image: "p-t", description: "Summarize text from a PDF", action: { showPDFPopup = true }),
+                                    PremiumFeature(title: "Chat with PDF", image: "p-t", description: "Ask questions about any PDF document", action: { showPDFPopup = true }),
                                     PremiumFeature(title: "Text to Speech", image: "t-s", description: "Convert text into audio speech", action: { showTextToSpeachPopup = true }),
                                 ])
                             }
@@ -449,7 +449,7 @@ struct HomeView: View {
             
             ImageGenerationPopupView(isPresented: $showImagePopup, isLoading: $isLoading, showError: $showErrorAlert)
             
-            PDFPopupView(isPresented: $showPDFPopup, isLoading: $isLoading, showError: $showErrorAlert)
+            PDFPopupView(isPresented: $showPDFPopup, showError: $showErrorAlert)
             
             TextToSpeachPopupView(isPresented: $showTextToSpeachPopup, isLoading: $isLoading, showError: $showErrorAlert)
             

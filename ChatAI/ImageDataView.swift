@@ -54,7 +54,7 @@ struct ImageDataView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 15) {
                 AsyncImage(url: URL(string: data.url)) { phase in
                     switch phase {
                     case .empty:
@@ -98,6 +98,27 @@ struct ImageDataView: View {
                 }
                 .padding(.horizontal, 50)
                 
+                Button(action: {
+                    impactFeedback.impactOccurred()
+                    isSharing = true
+                }) {
+                    HStack {
+                        Image("share")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 17, height: 17)
+                        Text("Share Image")
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(AppConstants.shared.primaryColor)
+                    .cornerRadius(10)
+                    .shadow(radius: 5)
+                }
+                .padding(.horizontal, 50)
+                
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Revised Prompt")
                         .font(.headline)
@@ -115,7 +136,7 @@ struct ImageDataView: View {
                 .padding(.horizontal)
                 .padding(.bottom, 40)
             }
-            .padding(.top)
+            .padding(.top, 20)
         }
         .background(AppConstants.shared.backgroundColor)
         .navigationBarTitleDisplayMode(.inline)
@@ -129,24 +150,6 @@ struct ImageDataView: View {
                 Text("Image Details")
                     .font(.headline)
                     .foregroundStyle(.white)
-            }
-            
-            ToolbarItem(placement: .topBarTrailing) {
-                Button(action: {
-                    impactFeedback.impactOccurred()
-                    isSharing = true
-                }) {
-                    ZStack {
-                        Rectangle()
-                            .foregroundColor(AppConstants.shared.grayColor)
-                            .frame(width: 35, height: 35)
-                            .cornerRadius(17.5)
-                        Image("share")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 17.5, height: 17.5)
-                    }
-                }
             }
         }
         .sheet(isPresented: $isSharing) {
