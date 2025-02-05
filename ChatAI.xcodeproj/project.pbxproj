@@ -30,7 +30,6 @@
 		81C0869D2D301A830044610B /* Exceptions for "ChatAI" folder in "ChatAI" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				"client_419463609125-h3gs5vgb10q6vq2b6e8n0lksik9pkt61.apps.googleusercontent.com.plist",
 				Info.plist,
 			);
 			target = 813E198B2D1D580700441006 /* ChatAI */;

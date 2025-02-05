@@ -70,12 +70,6 @@ extension AppDelegate: MessagingDelegate {
         
         UserAPI.shared.userId = fcmToken
         
-        if AppProvider.shared.isFirstOpen {
-            Messaging.messaging().subscribe(toTopic: "main") { error in
-                print("Subscribed to main topic")
-            }
-        }
-        
         //        if (AppProvider.shared.isFirstOpen) {
         //            Task {
         //                do {
