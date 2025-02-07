@@ -8,6 +8,15 @@
 import SwiftUI
 import SuperwallKit
 
+struct FeaturePreviewInfo {
+    let features: [Feature]
+}
+
+struct Feature {
+    let text: String
+    let image: String
+}
+
 struct HomeView: View {
     struct PremiumFeature {
         let title: String
@@ -37,6 +46,7 @@ struct HomeView: View {
     @State private var showImagePopup = false
     @State private var showPDFPopup = false
     @State private var showTextToSpeachPopup = false
+    @State private var showPreviwInfoPopup = false
     
     @State private var showErrorAlert = false
     @State private var isLoading = false
@@ -92,6 +102,14 @@ struct HomeView: View {
         AppInfo(name: "Meme AI", image: "meme-ai", description: "Track trending meme coins in real-time with AI-powered insights, price alerts, and market analysis", appUrl: "https://apps.apple.com/us/app/meme-coin-tracker-dex-screener/id6738891806"),
         AppInfo(name: "Motivation AI", image: "motivation", description: "Stay inspired every day with personalized AI-generated motivational quotes and life-changing affirmations", appUrl: "https://apps.apple.com/us/app/motivation-stoic-daily-quotes/id6740817263"),
         AppInfo(name: "Learn AI", image: "learn-ai", description: "An interactive AI-powered educational app designed for kids to learn coding, problem-solving, and critical thinking", appUrl: "https://apps.apple.com/us/app/learnai-%C3%AEnva%C8%9B%C4%83-limba-rom%C3%A2n%C4%83/id6738118898"),
+    ]
+    
+    @State private var selectedPreview: FeaturePreviewInfo?
+    
+    private let featuresPreview: [FeaturePreviewInfo] = [FeaturePreviewInfo(features: [Feature(text: "Enter Your Prompt & Select Resolution 📝🎨", image: "image8"), Feature(text: "Let AI Work Its Magic… ⏳✨", image: "image2"), Feature(text: "Download & Share 🚀📤", image: "image6")]),
+                                                         FeaturePreviewInfo(features: [Feature(text: "📌 Insert a YouTube Link", image: "image10"), Feature(text: "Let the AI Process the Video ⏳", image: "image2"), Feature(text: "Get a Clear, Concise Summary 🚀", image: "image9")]),
+                                                         FeaturePreviewInfo(features: [Feature(text: "Upload Your PDF 💡", image: "image5"), Feature(text: "Ask Any Question You Have 🤔", image: "image7"), Feature(text: "Get Your Answer Fast ⏳", image: "image4")]),
+                                                         FeaturePreviewInfo(features: [Feature(text: "Enter Your Text & Choose a Voice 🔊", image: "image3"), Feature(text: "AI Processes Your Request ⏳✨", image: "image2"), Feature(text: "Listen, Download, or Share 🚀📤", image: "image1")])
     ]
     
     private let popularPrompts: [String] = [
@@ -282,7 +300,7 @@ struct HomeView: View {
                                 premiumFeatures.append(contentsOf: [
                                     PremiumFeature(title: "Image generation", image: "t-i", description: "Create images with prompts", action: { showImagePopup = true }),
                                     PremiumFeature(title: "YouTube summary", image: "y-t", description: "Summarize text from a video", action: { showSummaryPopup = true }),
-                                    PremiumFeature(title: "Chat with PDF", image: "p-t", description: "Ask questions about any PDF document", action: { showPDFPopup = true }),
+                                    PremiumFeature(title: "Chat with PDF", image: "p-t", description: "Ask questions about PDF", action: { showPDFPopup = true }),
                                     PremiumFeature(title: "Text to Speech", image: "t-s", description: "Convert text into audio speech", action: { showTextToSpeachPopup = true }),
                                 ])
                             }
@@ -294,18 +312,19 @@ struct HomeView: View {
                                 .foregroundStyle(.clear)
                                 .frame(width: 13)
                             
-                            ForEach(premiumFeatures, id: \.title) { feature in
+                            ForEach(premiumFeatures.indices, id: \.self) { index in
                                 Button(action: {
                                     impactFeedback.impactOccurred()
-                                    if (!appProvider.isUserSubscribed) {
-                                        Superwall.shared.register(event: "campaign_trigger")
-                                    } else {
-                                        withAnimation {
-                                            feature.action()
+                                    withAnimation {
+                                        if appProvider.isUserSubscribed {
+                                            premiumFeatures[index].action()
+                                        } else {
+                                            selectedPreview = featuresPreview[index]
+                                            showPreviwInfoPopup = true
                                         }
                                     }
                                 }) {
-                                    featureCard(featureInfo: feature)
+                                    featureCard(featureInfo: premiumFeatures[index])
                                 }
                             }
                             
@@ -452,6 +471,8 @@ struct HomeView: View {
             PDFPopupView(isPresented: $showPDFPopup, showError: $showErrorAlert)
             
             TextToSpeachPopupView(isPresented: $showTextToSpeachPopup, isLoading: $isLoading, showError: $showErrorAlert)
+            
+            FeaturePreviewPopupView(isPresented: $showPreviwInfoPopup, previewInfo: selectedPreview ?? featuresPreview[0])
             
             if isLoading {
                 Color.black.opacity(0.5)

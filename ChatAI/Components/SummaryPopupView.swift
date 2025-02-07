@@ -73,13 +73,13 @@ struct SummaryPopupView: View {
                         Task {
                             do {
                                 let text = try await GeminiAiApi().getYoutubeSummary(videoLink)
-                                isLoading = false
                                 videoLink = ""
                                 
                                 appProvider.navigationPath.append(.summaryView(text: text))
                             } catch {
                                 showError = true
                             }
+                            isLoading = false
                         }
                     }) {
                         Text("Summarize")

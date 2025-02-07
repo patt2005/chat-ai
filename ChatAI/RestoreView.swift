@@ -62,12 +62,3 @@ struct RestoreView: View {
         .background(AppConstants.shared.backgroundColor.edgesIgnoringSafeArea(.all))
     }
 }
-
-// Preview
-struct RestoreView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            RestoreView()
-        }
-    }
-}

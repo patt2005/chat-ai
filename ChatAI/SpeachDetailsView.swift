@@ -16,6 +16,9 @@ class AudioPlayerManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     
     func playAudio(filePath: String) {
         do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+            try AVAudioSession.sharedInstance().setActive(true)
+            
             if let audioPlayer = audioPlayer {
                 audioPlayer.play()
                 isPlaying = true
@@ -57,7 +60,7 @@ struct SpeachDetailsView: View {
     }
     
     private func downloadAudio() {
-        let fileURL = URL(fileURLWithPath: audioFilepath) // The path to your audio file
+        let fileURL = URL(fileURLWithPath: audioFilepath)
 
         guard FileManager.default.fileExists(atPath: fileURL.path) else {
             print("File not found at path: \(fileURL.path)")

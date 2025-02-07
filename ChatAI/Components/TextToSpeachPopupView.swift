@@ -25,15 +25,22 @@ class TextTOSpeachPopupViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     func playAudio(url: URL) {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Failed to set up audio session:", error.localizedDescription)
+        }
+
         if let player = audioPlayer, player.timeControlStatus == .playing {
             player.pause()
         }
-        
+
         let playerItem = AVPlayerItem(url: url)
         audioPlayer = AVPlayer(playerItem: playerItem)
         
         audioPlayer?.play()
-        
+
         playbackTimer?.invalidate()
         playbackTimer = Timer.scheduledTimer(withTimeInterval: 3.5, repeats: false) { _ in
             self.audioPlayer?.pause()

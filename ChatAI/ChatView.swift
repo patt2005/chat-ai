@@ -23,6 +23,9 @@ class ChatViewModel: ObservableObject {
     
     @Published var showImages: Bool = false
     
+    @Published var isSharing = false
+    @Published var stringToShare: String = ""
+    
     private var cancellables = Set<AnyCancellable>()
     
     @ObservedObject var appProvider = AppProvider.shared
@@ -124,6 +127,8 @@ struct ChatView: View {
     
     @FocusState private var isFocused: Bool
     
+    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+    
     let prompt: String
     let model: AssistantModel
     
@@ -171,6 +176,7 @@ struct ChatView: View {
                     isFocused = false
                 }
                 .onAppear {
+                    impactFeedback.impactOccurred()
                     viewModel.scrollToBottom(proxy: reader)
                 }
                 .onChange(of: viewModel.messages) { _ in
@@ -209,7 +215,7 @@ struct ChatView: View {
                         .padding(.top, 5)
                     }
                     
-                    HStack(alignment: .center, spacing: 5) {
+                    HStack(alignment: .center, spacing: 0) {
                         Menu {
                             Button(action: {
                                 viewModel.sourceType = .photoLibrary
@@ -247,6 +253,7 @@ struct ChatView: View {
                         
                         Button(action: {
                             if !viewModel.isInteracting {
+                                impactFeedback.impactOccurred()
                                 if (AppProvider.shared.isUserSubscribed || AppProvider.shared.messagesCount > 0) {
                                     Task {
                                         if !viewModel.inputText.isEmpty {
@@ -331,7 +338,32 @@ struct ChatView: View {
                             .font(.headline.bold())
                     }
                 }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        impactFeedback.impactOccurred()
+                        var string = ""
+                        
+                        viewModel.messages.forEach { message in
+                            string += "User: \(message.sendText)"
+                            string += "\n"
+                            string += "AI: \(message.responseText ?? "Loading...")" + "\n"
+                        }
+                        
+                        viewModel.stringToShare = string
+                        
+                        viewModel.isSharing = true
+                    }) {
+                        Image("share-chat")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 26, height: 26)
+                    }
+                }
             }
+        }
+        .sheet(isPresented: $viewModel.isSharing) {
+            ActivityView(activityItems: [viewModel.stringToShare])
         }
         .background(AppConstants.shared.backgroundColor)
         .preferredColorScheme(.dark)
