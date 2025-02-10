@@ -44,6 +44,8 @@ class AppProvider: ObservableObject {
     
     @Published var messagesCount: Int = 0
     
+    @Published var hasRequestedReview: Bool = false
+    
     private let userDefaults = UserDefaults.standard
     
     private let messageCountKey = "dailyMessageCount"
@@ -58,6 +60,7 @@ class AppProvider: ObservableObject {
         } else {
             messagesCount = userDefaults.integer(forKey: messageCountKey)
         }
+        hasRequestedReview = userDefaults.bool(forKey: "hasRequestedReview")
     }
     
     func sendMessage() {

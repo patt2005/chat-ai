@@ -76,6 +76,9 @@ final class RCPurchaseController: PurchaseController {
     func restorePurchases() async -> RestorationResult {
         do {
             _ = try await Purchases.shared.restorePurchases()
+            DispatchQueue.main.async {
+                AppProvider.shared.isUserSubscribed = true
+            }
             return .restored
         } catch let error {
             return .failed(error)

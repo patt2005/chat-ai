@@ -131,6 +131,8 @@ struct ChatView: View {
     
     @FocusState private var isFocused: Bool
     
+    @Environment(\.requestReview) var requestReview
+    
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     
     let prompt: String
@@ -259,6 +261,12 @@ struct ChatView: View {
                         Button(action: {
                             if !viewModel.isInteracting {
                                 impactFeedback.impactOccurred()
+                                if !viewModel.appProvider.hasRequestedReview {
+                                    requestReview()
+                                    viewModel.appProvider.hasRequestedReview = true
+                                    UserDefaults.standard.set(true, forKey: "hasRequestedReview")
+                                }
+                                
                                 if (AppProvider.shared.isUserSubscribed || AppProvider.shared.messagesCount > 0) {
                                     Task {
                                         if !viewModel.inputText.isEmpty {
