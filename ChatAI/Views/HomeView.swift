@@ -86,16 +86,13 @@ struct HomeView: View {
         )
     ]
     
-    @State private var premiumFeatures: [PremiumFeature] = [
-        //        PremiumFeature(title: "Music generation", image: "t-m", description: "Create music with text"),
-    ]
+    @State private var premiumFeatures: [PremiumFeature] = []
     
     private let assistantsList: [AssistantModel] = [
         AssistantModel(name: "Qwen", avatar: "qwen", apiModel: QwenApi.shared, type: .qwen),
         AssistantModel(name: "ChatGPT", avatar: "chatgpt", apiModel: OpenAiApi.shared, type: .openAi),
         AssistantModel(name: "Claude AI", avatar: "claude", apiModel: ClaudeAiApi.shared, type: .claudeAi),
         AssistantModel(name: "Gemini", avatar: "gemini", apiModel: GeminiAiApi.shared, type: .gemini),
-        AssistantModel(name: "Meta AI", avatar: "meta", apiModel: MetaAiApi.shared, type: .metaAi),
     ]
     
     private let otherAiApps: [AppInfo] = [

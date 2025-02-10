@@ -59,7 +59,6 @@ enum AssistantModelType: String, Codable {
     case openAi = "openAi"
     case claudeAi = "claudeAi"
     case gemini = "gemini"
-    case metaAi = "metaAi"
     case qwen = "qwen"
 }
 

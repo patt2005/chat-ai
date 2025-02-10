@@ -11,6 +11,8 @@ import SwiftUI
 import PDFKit
 
 class GeminiAiApi: AiModel {
+    var modelsList: [String] = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"]
+    
     static var shared: any AiModel = GeminiAiApi()
     
     private func extractTextFromPDF(pdfData: Data) -> String {
@@ -29,8 +31,8 @@ class GeminiAiApi: AiModel {
     
     private let vertex = VertexAI.vertexAI()
     
-    func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error> {
-        let model = vertex.generativeModel(modelName: "gemini-1.5-flash")
+    func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error> {
+        let model = vertex.generativeModel(modelName: aiModel)
         
         let uiImages = imagesList.compactMap { base64String -> UIImage? in
             if let imageData = Data(base64Encoded: base64String) {

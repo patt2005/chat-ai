@@ -10,5 +10,7 @@ import Foundation
 protocol AiModel {
     static var shared: any AiModel { get set }
     
-    func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error>
+    var modelsList: [String] { get set }
+    
+    func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error>
 }

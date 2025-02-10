@@ -26,6 +26,8 @@ class ChatViewModel: ObservableObject {
     @Published var isSharing = false
     @Published var stringToShare: String = ""
     
+    @Published var pickedModel: String = ""
+    
     private var cancellables = Set<AnyCancellable>()
     
     @ObservedObject var appProvider = AppProvider.shared
@@ -47,6 +49,8 @@ class ChatViewModel: ObservableObject {
             self.chatHistory = history
             self.messages = history.messages
         }
+        
+        pickedModel = self.model.apiModel.modelsList[0]
         
         $selectedImage.sink { newImage in
             if let image = newImage {
@@ -94,7 +98,7 @@ class ChatViewModel: ObservableObject {
         self.showImages = false
         
         do {
-            let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [])
+            let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [], aiModel: pickedModel)
             for try await text in stream {
                 streamText += text
                 messageRow.responseText = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -246,6 +250,7 @@ struct ChatView: View {
                         TextField("Type a message...", text: $viewModel.inputText, axis: .vertical)
                             .lineLimit(1...4)
                             .padding(.horizontal, 6)
+                            .padding(.leading, 4)
                             .foregroundColor(.white)
                             .autocorrectionDisabled(true)
                             .textInputAutocapitalization(.sentences)
@@ -327,15 +332,42 @@ struct ChatView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    HStack {
-                        Image(model.avatar)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 30, height: 30)
-                            .cornerRadius(15)
-                        
-                        Text(model.name)
-                            .font(.headline.bold())
+                    Menu {
+                        ForEach(model.apiModel.modelsList, id: \.self) { model in
+                            Button(action: {
+                                viewModel.pickedModel = model
+                            }) {
+                                HStack {
+                                    Text(model)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.white)
+                                    
+                                    Spacer()
+                                    
+                                    if viewModel.pickedModel == model {
+                                        Image(systemName: "checkmark")
+                                            .foregroundStyle(.white)
+                                            .font(.subheadline)
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(alignment: .center, spacing: 7) {
+                            Image(model.avatar)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 25, height: 25)
+                                .cornerRadius(12.5)
+                            
+                            Text(viewModel.pickedModel)
+                                .foregroundStyle(.white)
+                                .font(.subheadline.bold())
+                            
+                            Image(systemName: "chevron.forward")
+                                .font(.caption)
+                                .foregroundStyle(.gray)
+                        }
                     }
                 }
                 
@@ -357,7 +389,7 @@ struct ChatView: View {
                         Image("share-chat")
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 26, height: 26)
+                            .frame(width: 25, height: 25)
                     }
                 }
             }

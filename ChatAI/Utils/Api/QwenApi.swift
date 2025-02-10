@@ -8,6 +8,8 @@
 import Foundation
 
 class QwenApi: AiModel {
+    var modelsList: [String] = ["qwen-vl-max", "qwen-vl-plus"]
+    
     static var shared: any AiModel = QwenApi()
     
     struct CompletionResponse: Decodable {
@@ -40,7 +42,7 @@ class QwenApi: AiModel {
         return cleanedText
     }
     
-    func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error> {
+    func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error> {
         let url = URL(string: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions")!
         
         let headers = [
@@ -75,7 +77,7 @@ class QwenApi: AiModel {
         ])
         
         let requestBody: [String: Any] = [
-            "model": "qwen-vl-max",
+            "model": aiModel,
             "messages": messages,
             "stream": true,
         ]

@@ -9,6 +9,9 @@ import Foundation
 import SwiftUI
 
 class ClaudeAiApi: AiModel {
+    var modelsList: [String] = ["claude-3-5-sonnet-20241022", "claude-3-5-sonnet-20240620",
+                                "claude-3-haiku-20240307", "claude-3-opus-20240229", "claude-3-sonnet-20240229"]
+    
     static var shared: any AiModel = ClaudeAiApi()
     
     struct ClaudeRequest: Codable {
@@ -37,7 +40,7 @@ class ClaudeAiApi: AiModel {
         let delta: Response
     }
     
-    func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow]) async throws -> AsyncThrowingStream<String, Error> {
+    func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error> {
         let apiURL = URL(string: "https://api.anthropic.com/v1/messages")!
         
         var contentList: [[String: Any]] = [["type": "text", "text": message]]
@@ -65,7 +68,7 @@ class ClaudeAiApi: AiModel {
         }
         
         let requestPayload: [String: Any] = [
-            "model": "claude-3-5-sonnet-20241022",
+            "model": aiModel,
             "max_tokens": 2048,
             "stream": true,
             "messages": messagesList

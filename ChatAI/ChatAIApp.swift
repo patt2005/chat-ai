@@ -70,18 +70,6 @@ extension AppDelegate: MessagingDelegate {
         
         UserAPI.shared.userId = fcmToken
         
-        //        if (AppProvider.shared.isFirstOpen) {
-        //            Task {
-        //                do {
-        //                    try await UserAPI.shared.registerUser(withId: fcmToken)
-        //
-        //                    print("✅ User was registered!")
-        //                } catch {
-        //                    print("❌ There was an error registering the user: \(error.localizedDescription)")
-        //                }
-        //            }
-        //        }
-        
         let dataDict: [String: String] = ["token": fcmToken]
         NotificationCenter.default.post(name: Notification.Name("FCMToken"),
                                         object: nil,
