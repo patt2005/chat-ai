@@ -9,8 +9,8 @@ import Foundation
 
 class QwenApi: AiModel {
     var modelsList: [String: String] = [
+        "Qwen VL Plus": "qwen-vl-plus",
         "Qwen VL Max": "qwen-vl-max",
-        "Qwen VL Plus": "qwen-vl-plus"
     ]
     
     static var shared: any AiModel = QwenApi()

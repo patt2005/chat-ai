@@ -23,9 +23,6 @@ class ChatViewModel: ObservableObject {
     
     @Published var showImages: Bool = false
     
-    @Published var isSharing = false
-    @Published var stringToShare: String = ""
-    
     @Published var pickedModel: String = ""
     
     private var cancellables = Set<AnyCancellable>()
@@ -34,6 +31,7 @@ class ChatViewModel: ObservableObject {
     
     private let model: AssistantModel
     private var chatHistory: ChatHistoryEntity? = nil
+    private var responseTask: Task<Void, Never>?
     
     @MainActor
     func sendTapped() async {
@@ -72,6 +70,13 @@ class ChatViewModel: ObservableObject {
     }
     
     @MainActor
+    func cancelResponse() {
+        responseTask?.cancel()
+        isInteracting = false
+        responseTask = nil
+    }
+    
+    @MainActor
     func retry(messageRow: MessageRow) async {
         let index = messages.firstIndex { message in
             return messageRow.id == message.id
@@ -97,30 +102,37 @@ class ChatViewModel: ObservableObject {
         self.messages.append(messageRow)
         self.showImages = false
         
-        do {
-            let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [], aiModel: model.apiModel.modelsList[pickedModel]!)
-            for try await text in stream {
-                streamText += text
-                messageRow.responseText = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
-                self.messages[self.messages.count - 1] = messageRow
+        responseTask = Task {
+            do {
+                let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [], aiModel: model.apiModel.modelsList[pickedModel]!)
+                for try await text in stream {
+                    if Task.isCancelled { return }
+                    streamText += text
+                    messageRow.responseText = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
+                    self.messages[self.messages.count - 1] = messageRow
+                }
+                self.uploadedImages.removeAll()
+            } catch let error as NSError {
+                if error.domain == NSURLErrorDomain && error.code == -999 {
+                    messageRow.responseError = nil
+                } else {
+                    messageRow.responseError = error.localizedDescription
+                }
             }
-            self.uploadedImages.removeAll()
-        } catch {
-            messageRow.responseError = error.localizedDescription
+            
+            messageRow.isInteracting = false
+            self.messages[self.messages.count - 1] = messageRow
+            isInteracting = false
+            
+            if let chatHistory  {
+                let foundChat = appProvider.chatHistory.first(where: { $0.id == chatHistory.id })!
+                foundChat.messages = self.messages
+            } else {
+                appProvider.chatHistory.append(ChatHistoryEntity(id: UUID(), assistantModelType: self.model.type, messages: self.messages))
+                self.chatHistory = appProvider.chatHistory.last
+            }
+            appProvider.saveChatHistory()
         }
-        
-        messageRow.isInteracting = false
-        self.messages[self.messages.count - 1] = messageRow
-        isInteracting = false
-        
-        if let chatHistory  {
-            let foundChat = appProvider.chatHistory.first(where: { $0.id == chatHistory.id })!
-            foundChat.messages = self.messages
-        } else {
-            appProvider.chatHistory.append(ChatHistoryEntity(id: UUID(), assistantModelType: self.model.type, messages: self.messages))
-            self.chatHistory = appProvider.chatHistory.last
-        }
-        appProvider.saveChatHistory()
     }
 }
 
@@ -259,8 +271,8 @@ struct ChatView: View {
                             .focused($isFocused)
                         
                         Button(action: {
+                            impactFeedback.impactOccurred()
                             if !viewModel.isInteracting {
-                                impactFeedback.impactOccurred()
                                 if !viewModel.appProvider.hasRequestedReview {
                                     requestReview()
                                     viewModel.appProvider.hasRequestedReview = true
@@ -278,21 +290,21 @@ struct ChatView: View {
                                 } else {
                                     Superwall.shared.register(event: "campaign_trigger")
                                 }
+                            } else {
+                                viewModel.cancelResponse()
                             }
                         }) {
-                            if !viewModel.isInteracting {
-                                Image(systemName: "paperplane.fill")
+                            ZStack {
+                                Rectangle()
+                                    .frame(width: 35, height: 35)
+                                    .cornerRadius(17.5)
+                                    .foregroundStyle(AppConstants.shared.primaryColor)
+                                
+                                Image(systemName: viewModel.isInteracting ? "stop.fill" : "paperplane.fill")
                                     .font(.headline)
                                     .foregroundColor(.white)
-                                    .padding(7)
-                                    .background(AppConstants.shared.primaryColor)
-                                    .clipShape(Circle())
-                                    .padding(.trailing, 10)
-                            } else {
-                                ProgressView()
-                                    .frame(width: 20, height: 20)
-                                    .padding(.trailing, 20)
                             }
+                            .padding(.trailing, 11)
                         }
                     }
                 }
@@ -390,9 +402,8 @@ struct ChatView: View {
                             string += "AI: \(message.responseText ?? "Loading...")" + "\n"
                         }
                         
-                        viewModel.stringToShare = string
-                        
-                        viewModel.isSharing = true
+                        viewModel.appProvider.stringToShare = string
+                        viewModel.appProvider.isSharing = true
                     }) {
                         Image("share-chat")
                             .resizable()
@@ -401,9 +412,6 @@ struct ChatView: View {
                     }
                 }
             }
-        }
-        .sheet(isPresented: $viewModel.isSharing) {
-            ActivityView(activityItems: [viewModel.stringToShare])
         }
         .background(AppConstants.shared.backgroundColor)
         .preferredColorScheme(.dark)

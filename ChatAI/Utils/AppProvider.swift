@@ -42,6 +42,9 @@ class AppProvider: ObservableObject {
     @Published var isFirstOpen = false
     @Published var isUserSubscribed = false
     
+    @Published var isSharing = false
+    @Published var stringToShare: String = ""
+    
     @Published var messagesCount: Int = 0
     
     @Published var hasRequestedReview: Bool = false

@@ -107,6 +107,9 @@ struct ContentView: View {
                     }
                 }
             }
+            .sheet(isPresented: $appProvider.isSharing) {
+                ActivityView(activityItems: [appProvider.stringToShare])
+            }
             .navigationDestination(for: NavigationDestination.self) { destination in
                 switch destination {
                 case .chatView(let prompt, let model, let history): ChatView(prompt: prompt, model: model, chatHistory:  history)

@@ -46,8 +46,12 @@ struct MessageRowView: View {
     let messageRow: MessageRow
     let retryCallback: (MessageRow) -> Void
     
+    @State private var isCopied = false
+    
     @Binding var showImageContent: Bool
     @Binding var selectedImage: UIImage?
+    
+    @ObservedObject private var appProvider = AppProvider.shared
     
     private func messageBubble(isUser: Bool, text: String, image: String? = nil, responseError: String?, isLoading: Bool, imagesList: [String] = []) -> some View {
         HStack(alignment: .top, spacing: 13) {
@@ -59,9 +63,9 @@ struct MessageRowView: View {
                     .cornerRadius(17.5)
             }
             
-            VStack(alignment: isUser ? .trailing : .leading) {
+            VStack(alignment: isUser ? .trailing : .leading, spacing: 7) {
                 if !imagesList.isEmpty {
-                    LazyVStack(alignment: .trailing, spacing: 10) {
+                    ReversedScrollView {
                         ForEach(Array(imagesList.enumerated()), id: \.offset) { index, image in
                             if let imageData = Data(base64Encoded: image), let image = UIImage(data: imageData) {
                                 Button(action: {
@@ -94,6 +98,41 @@ struct MessageRowView: View {
                             .padding(isUser ? 12 : 0)
                             .background(isUser ? AppConstants.shared.grayColor : AppConstants.shared.backgroundColor)
                             .cornerRadius(isUser ? 16 : 0)
+                    }
+                    
+                    if !isUser {
+                        HStack(spacing: 15) {
+                            Button(action: {
+                                UIPasteboard.general.string = text
+                                withAnimation {
+                                    isCopied = true
+                                }
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    withAnimation {
+                                        isCopied = false
+                                    }
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: isCopied ? "checkmark" : "document.on.document")
+                                        .font(.headline)
+                                        .foregroundStyle(.white.opacity(0.7))
+                                }
+                            }
+                            
+                            Button(action: {
+                                appProvider.stringToShare = text
+                                appProvider.isSharing = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "square.and.arrow.up")
+                                        .font(.custom("", size: 19))
+                                        .foregroundStyle(.white.opacity(0.7))
+                                }
+                            }
+                        }
+                        .padding(.top, 1)
                     }
                 }
                 

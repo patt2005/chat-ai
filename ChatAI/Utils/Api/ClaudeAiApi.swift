@@ -64,12 +64,14 @@ class ClaudeAiApi: AiModel {
             ], at: 1)
         }
         
-        var messagesList = [["role": "user", "content": contentList]]
+        var messagesList: [[String: Any]] = []
         
         chatHistoryList.forEach { ch in
-            messagesList.insert(["role": "user", "content": ch.sendText], at: 0)
-            messagesList.insert(["role": "assistant", "content": ch.responseText ?? ""], at: 1)
+            messagesList.append(["role": "user", "content": ch.sendText])
+            messagesList.append(["role": "assistant", "content": ch.responseText == "" ? "No response was generated." : ch.responseText ?? "No response was generated." ])
         }
+        
+        messagesList.append(["role": "user", "content": contentList])
         
         let requestPayload: [String: Any] = [
             "model": aiModel,
