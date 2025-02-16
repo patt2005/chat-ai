@@ -50,7 +50,7 @@ class ChatViewModel: ObservableObject {
             self.messages = history.messages
         }
         
-        pickedModel = self.model.apiModel.modelsList[0]
+        pickedModel = self.model.apiModel.modelsList.keys.first!
         
         $selectedImage.sink { newImage in
             if let image = newImage {
@@ -98,7 +98,7 @@ class ChatViewModel: ObservableObject {
         self.showImages = false
         
         do {
-            let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [], aiModel: pickedModel)
+            let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [], aiModel: model.apiModel.modelsList[pickedModel]!)
             for try await text in stream {
                 streamText += text
                 messageRow.responseText = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -341,7 +341,7 @@ struct ChatView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Menu {
-                        ForEach(model.apiModel.modelsList, id: \.self) { model in
+                        ForEach(Array(model.apiModel.modelsList.keys), id: \.self) { model in
                             Button(action: {
                                 viewModel.pickedModel = model
                             }) {

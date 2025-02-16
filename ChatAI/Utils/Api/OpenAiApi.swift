@@ -18,8 +18,14 @@ enum ApiAnalysisError: Error {
 }
 
 class OpenAiApi: AiModel {
-    var modelsList: [String] = ["gpt-4o-2024-08-06", "gpt-4o-2024-11-20", "gpt-4o-2024-05-13", "gpt-4o-mini-2024-07-18",
-                                "o3-mini-2025-01-31", "gpt-4-turbo-2024-04-09"]
+    var modelsList: [String: String] = [
+        "GPT-4o (Aug '24)": "gpt-4o-2024-08-06",
+        "GPT-4o (Nov '24)": "gpt-4o-2024-11-20",
+        "GPT-4o (May '24)": "gpt-4o-2024-05-13",
+        "GPT-4o Mini (Jul '24)": "gpt-4o-mini-2024-07-18",
+        "O3 Mini (Jan '25)": "o3-mini-2025-01-31",
+        "GPT-4 Turbo (Apr '24)": "gpt-4-turbo-2024-04-09"
+    ]
     
     struct CompletionResponse: Decodable {
         struct Choice: Decodable {
