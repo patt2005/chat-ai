@@ -8,10 +8,8 @@
 import Foundation
 
 class QwenApi: AiModel {
-    var modelsList: [String: String] = [
-        "Qwen VL Plus": "qwen-vl-plus",
-        "Qwen VL Max": "qwen-vl-max",
-    ]
+    var modelsList: [String: String] = [:]
+    var apiEndpoint: String = ""
     
     static var shared: any AiModel = QwenApi()
     
@@ -46,11 +44,10 @@ class QwenApi: AiModel {
     }
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error> {
-        let url = URL(string: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1/chat/completions")!
+        let url = URL(string: "\(apiEndpoint)/chat")!
         
         let headers = [
             "Content-Type": "application/json",
-            "Authorization": "Bearer \(AppConstants.shared.qwenApiKey)"
         ]
         
         var messages: [[String: Any]] = []
@@ -66,13 +63,13 @@ class QwenApi: AiModel {
             ])
         }
         
-        var userMessageContent: [[String: Any]] = [
-            ["type": "text", "text": message],
-        ]
+        var userMessageContent: [[String: Any]] = []
         
         imagesList.forEach { image in
             userMessageContent.insert(["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(image)"]], at: 0)
         }
+        
+        userMessageContent.append(["type": "text", "text": message])
         
         messages.append([
             "role": "user",
@@ -104,7 +101,7 @@ class QwenApi: AiModel {
         }
         
         let (result, response) = try await URLSession.shared.bytes(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw ApiAnalysisError.invalidResponse
         }

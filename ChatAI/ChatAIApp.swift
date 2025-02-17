@@ -27,7 +27,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         Task {
             await handleNotificationPermissions(application: application)
-        }
+        } 
         
         return true
     }
@@ -67,8 +67,6 @@ extension AppDelegate: MessagingDelegate {
             print("No FCM token received")
             return
         }
-        
-        UserAPI.shared.userId = fcmToken
         
         let dataDict: [String: String] = ["token": fcmToken]
         NotificationCenter.default.post(name: Notification.Name("FCMToken"),

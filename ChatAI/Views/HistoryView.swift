@@ -14,59 +14,63 @@ struct HistoryView: View {
         case .claudeAi: return AssistantModel(name: "Claude AI", avatar: "claude", apiModel: ClaudeAiApi.shared, type: .claudeAi)
         case .gemini: return AssistantModel(name: "Gemini", avatar: "gemini", apiModel: GeminiAiApi.shared, type: .gemini)
         case .qwen: return AssistantModel(name: "Qwen", avatar: "qwen", apiModel: QwenApi.shared, type: .qwen)
+        case .grok: return AssistantModel(name: "Grok", avatar: "grok", apiModel: GrokAiApi.shared, type: .grok)
         }
     }
     
     struct ChatHistoryCard: View {
-        struct AssistantInfo {
-            let name: String
-            let avatar: String
-        }
-        
         let history: ChatHistoryEntity
         let info: AssistantModel
         
         var body: some View {
-            
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
                 HStack {
                     Image(info.avatar)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 50, height: 50)
-                        .cornerRadius(25)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .padding(6)
+                        .background(Color.gray.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
                     
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(info.name)
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.white.opacity(0.9))
                         
                         Text("Messages: \(history.messages.count)")
                             .font(.subheadline)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.white.opacity(0.6))
                     }
                     Spacer()
                 }
                 
-                Divider()
-                    .background(Color.gray)
-                
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 4) {
                     ForEach(history.messages.suffix(2).reversed()) { message in
                         Text(message.sendText)
                             .font(.subheadline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.white.opacity(0.85))
                             .lineLimit(1)
                     }
                 }
+                .padding(.vertical, 5)
+                
             }
             .padding()
             .background(
-                LinearGradient(colors: [Color.blue.opacity(0.2), AppConstants.shared.primaryColor.opacity(0.5)],
-                               startPoint: .topLeading, endPoint: .bottomTrailing)
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.gray.opacity(0.4), Color.gray.opacity(0.6)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
             )
-            .cornerRadius(15)
-            .shadow(color: .black.opacity(0.4), radius: 10, x: 0, y: 5)
+            .cornerRadius(16)
+            .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            )
         }
     }
     

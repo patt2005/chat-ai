@@ -8,13 +8,9 @@
 import Foundation
 import SwiftUI
 
-class ClaudeAiApi: AiModel {
-    var modelsList: [String: String] = [
-        "Claude 3.5 Sonnet": "claude-3-5-sonnet-20241022",
-        "Claude 3 Haiku": "claude-3-haiku-20240307",
-        "Claude 3 Opus": "claude-3-opus-20240229",
-        "Claude 3 Sonnet": "claude-3-sonnet-20240229"
-    ]
+class ClaudeAiApi: AiModel {    
+    var modelsList: [String: String] = [:]
+    var apiEndpoint: String = ""
     
     static var shared: any AiModel = ClaudeAiApi()
     
@@ -45,7 +41,7 @@ class ClaudeAiApi: AiModel {
     }
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error> {
-        let apiURL = URL(string: "https://api.anthropic.com/v1/messages")!
+        let apiURL = URL(string: "\(apiEndpoint)/chat")!
         
         var contentList: [[String: Any]] = [["type": "text", "text": message]]
         
@@ -84,8 +80,6 @@ class ClaudeAiApi: AiModel {
         
         var request = URLRequest(url: apiURL)
         request.httpMethod = "POST"
-        request.addValue(AppConstants.shared.claudeApiKey, forHTTPHeaderField: "x-api-key")
-        request.addValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
         

@@ -74,7 +74,7 @@ struct FeaturePreviewPopupView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(AppConstants.shared.primaryColor)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                             .cornerRadius(10)
                     }
                 }

@@ -56,69 +56,86 @@ struct ContentView: View {
     @StateObject private var viewModel = ContentViewModel()
     
     var body: some View {
-        NavigationStack(path: $appProvider.navigationPath) {
-            TabView(selection: $viewModel.selectedTab) {
-                HomeView()
-                    .tabItem { Label("Chat", systemImage: "ellipsis.message" ) }.tag(0)
-                
-                HistoryView()
-                    .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }.tag(1)
-                
-                SettingsView()
-                    .tabItem { Label("Settings", systemImage: "gearshape") }.tag(2)
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    HStack(alignment: .center, spacing: 5) {
-                        Image("icon")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40, height: 40)
-                            .cornerRadius(20)
-                        
-                        Text("Qwently AI")
-                            .font(.title2.bold())
-                            .foregroundStyle(.white)
-                    }
+        ZStack {
+            NavigationStack(path: $appProvider.navigationPath) {
+                TabView(selection: $viewModel.selectedTab) {
+                    HomeView()
+                        .tabItem { Label("Chat", systemImage: "ellipsis.message" ) }.tag(0)
+                    
+                    HistoryView()
+                        .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }.tag(1)
+                    
+                    SettingsView()
+                        .tabItem { Label("Settings", systemImage: "gearshape") }.tag(2)
                 }
-                
-                if (!appProvider.isUserSubscribed) {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button(action: {
-                            Superwall.shared.register(event: "campaign_trigger")
-                        }) {
-                            HStack(spacing: 5) {
-                                Image(systemName: "crown.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .foregroundStyle(.white)
-                                    .frame(width: 25, height: 25)
-                                
-                                Text("PRO")
-                                    .foregroundStyle(.white)
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        HStack(alignment: .center, spacing: 5) {
+                            Image("icon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                                .cornerRadius(20)
+                            
+                            Text(appProvider.appName)
+                                .font(.title2.bold())
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    
+                    if (!appProvider.isUserSubscribed) {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(action: {
+                                Superwall.shared.register(event: "campaign_trigger")
+                            }) {
+                                HStack(spacing: 5) {
+                                    Image(systemName: "crown.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundStyle(.black)
+                                        .frame(width: 25, height: 25)
+                                    
+                                    Text("PRO")
+                                        .foregroundStyle(.black)
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
+                                }
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 7)
+                                .background(AppConstants.shared.primaryColor)
+                                .cornerRadius(10)
                             }
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 7)
-                            .background(AppConstants.shared.primaryColor)
-                            .cornerRadius(10)
                         }
                     }
                 }
+                .sheet(isPresented: $appProvider.isSharing) {
+                    ActivityView(activityItems: [appProvider.stringToShare])
+                }
+                .navigationDestination(for: NavigationDestination.self) { destination in
+                    switch destination {
+                    case .chatView(let prompt, let model, let history): ChatView(prompt: prompt, model: model, chatHistory:  history)
+                    case .summaryView(let text): TextSummaryView(text: text)
+                    case .imageDataView(let image): ImageDataView(data: image)
+                    case .speachDetailsView(let filePath) : SpeachDetailsView(audioFilePath: filePath)
+                    case .restoreView : RestoreView()
+                    case .manageSubscriptionView : ManageSubscriptionView()
+                    case .chatPdfView(let pdfData) : ChatPdfView(pdfData: pdfData)
+                    }
+                }
             }
-            .sheet(isPresented: $appProvider.isSharing) {
-                ActivityView(activityItems: [appProvider.stringToShare])
-            }
-            .navigationDestination(for: NavigationDestination.self) { destination in
-                switch destination {
-                case .chatView(let prompt, let model, let history): ChatView(prompt: prompt, model: model, chatHistory:  history)
-                case .summaryView(let text): TextSummaryView(text: text)
-                case .imageDataView(let image): ImageDataView(data: image)
-                case .speachDetailsView(let filePath) : SpeachDetailsView(audioFilePath: filePath)
-                case .restoreView : RestoreView()
-                case .manageSubscriptionView : ManageSubscriptionView()
-                case .chatPdfView(let pdfData) : ChatPdfView(pdfData: pdfData)
+            
+            if appProvider.isLoading {
+                Color.black.opacity(0.5)
+                    .edgesIgnoringSafeArea(.all)
+                
+                VStack {
+                    Text("Loading...")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        .scaleEffect(1.2)
                 }
             }
         }

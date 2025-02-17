@@ -162,7 +162,7 @@ struct ChatPdfView: View {
                             if !viewModel.isInteracting {
                                 Image(systemName: "paperplane.fill")
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.black)
                                     .padding(7)
                                     .background(AppConstants.shared.primaryColor)
                                     .clipShape(Circle())

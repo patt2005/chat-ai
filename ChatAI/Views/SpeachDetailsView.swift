@@ -127,10 +127,10 @@ struct SpeachDetailsView: View {
                     HStack(alignment: .center) {
                         Image(systemName: "square.and.arrow.up")
                             .font(.system(size: 25))
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                             .padding(.bottom, 3)
                         Text("Share")
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                             .font(.headline)
                     }
                     .frame(maxWidth: .infinity)
@@ -147,9 +147,9 @@ struct SpeachDetailsView: View {
                     HStack {
                         Image(systemName: "arrow.down.circle")
                             .font(.system(size: 25))
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                         Text("Download")
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                             .font(.headline)
                     }
                     .frame(maxWidth: .infinity)

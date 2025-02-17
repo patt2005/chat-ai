@@ -100,7 +100,7 @@ struct ImageGenerationPopupView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(promptText.isEmpty ? Color.gray : AppConstants.shared.primaryColor)
-                            .foregroundColor(.white)
+                            .foregroundColor(promptText.isEmpty ? .white : .black)
                             .cornerRadius(10)
                             .opacity(promptText.isEmpty ? 0.5 : 1.0)
                     }

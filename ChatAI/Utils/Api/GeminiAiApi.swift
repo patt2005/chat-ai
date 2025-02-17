@@ -11,10 +11,8 @@ import SwiftUI
 import PDFKit
 
 class GeminiAiApi: AiModel {
-    var modelsList: [String: String] = [
-        "Gemini 1.5 Flash": "gemini-1.5-flash",
-        "Gemini 1.5 Pro": "gemini-1.5-pro",
-    ]
+    var modelsList: [String: String] = [:]
+    var apiEndpoint: String = ""
     
     static var shared: any AiModel = GeminiAiApi()
     

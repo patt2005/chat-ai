@@ -85,10 +85,10 @@ struct ImageDataView: View {
                     HStack {
                         Image(systemName: "arrow.down.circle.fill")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                         Text("Download Image")
                             .fontWeight(.bold)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                     }
                     .padding()
                     .frame(maxWidth: .infinity)
@@ -103,13 +103,12 @@ struct ImageDataView: View {
                     isSharing = true
                 }) {
                     HStack {
-                        Image("share")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 17, height: 17)
+                        Image(systemName: "square.and.arrow.up")
+                            .font(.headline)
+                            .foregroundColor(.black)
                         Text("Share Image")
                             .fontWeight(.bold)
-                            .foregroundColor(.white)
+                            .foregroundColor(.black)
                     }
                     .padding()
                     .frame(maxWidth: .infinity)

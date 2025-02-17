@@ -49,7 +49,6 @@ struct HomeView: View {
     @State private var showPreviwInfoPopup = false
     
     @State private var showErrorAlert = false
-    @State private var isLoading = false
     
     @Environment(\.requestReview) var requestReview
     
@@ -89,6 +88,7 @@ struct HomeView: View {
     @State private var premiumFeatures: [PremiumFeature] = []
     
     private let assistantsList: [AssistantModel] = [
+        AssistantModel(name: "Grok", avatar: "grok", apiModel: GrokAiApi.shared, type: .grok),
         AssistantModel(name: "Qwen", avatar: "qwen", apiModel: QwenApi.shared, type: .qwen),
         AssistantModel(name: "ChatGPT", avatar: "chatgpt", apiModel: OpenAiApi.shared, type: .openAi),
         AssistantModel(name: "Claude AI", avatar: "claude", apiModel: ClaudeAiApi.shared, type: .claudeAi),
@@ -186,7 +186,7 @@ struct HomeView: View {
                                     .font(.title3.bold())
                                     .foregroundStyle(.white)
                                 
-                                Text("You've used all 10 free messages for today. Subscribe to Pro for unlimited access!")
+                                Text("You've used all \(appProvider.maxDailyMessages) free messages for today. Subscribe to Pro for unlimited access!")
                                     .font(.caption)
                                     .foregroundStyle(.gray)
                                     .multilineTextAlignment(.center)
@@ -197,10 +197,10 @@ struct HomeView: View {
                                 }) {
                                     Text("Upgrade to Pro")
                                         .font(.subheadline.bold())
-                                        .foregroundStyle(.white)
-                                        .padding(.vertical, 10)
+                                        .foregroundStyle(.black)
+                                        .padding(.vertical, 12)
                                         .frame(maxWidth: .infinity)
-                                        .background(Color.purple)
+                                        .background(Color.white)
                                         .cornerRadius(12)
                                 }
                                 .padding(.horizontal, 15)
@@ -218,12 +218,12 @@ struct HomeView: View {
                                     
                                     RoundedRectangle(cornerRadius: 10)
                                         .fill(appProvider.messagesCount > 0 ? Color.green : Color.red)
-                                        .frame(width: geometry.size.width * CGFloat(appProvider.messagesCount) / CGFloat(10), height: 8)
+                                        .frame(width: geometry.size.width * CGFloat(appProvider.messagesCount) / CGFloat(appProvider.maxDailyMessages), height: 8)
                                 }
                             }
                             .frame(height: 8)
                             
-                            Text("\(appProvider.messagesCount) of \(10) messages remaining")
+                            Text("\(appProvider.messagesCount) of \(appProvider.maxDailyMessages) messages remaining")
                                 .font(.caption)
                                 .foregroundStyle(.gray)
                         }
@@ -231,12 +231,12 @@ struct HomeView: View {
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(
-                        LinearGradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.5)],
+                        LinearGradient(colors: [Color.black.opacity(0.5), Color.gray.opacity(0.4)],
                                        startPoint: .topLeading,
                                        endPoint: .bottomTrailing)
                     )
                     .cornerRadius(15)
-                    .shadow(color: .black.opacity(0.2), radius: 5, x: 0, y: 3)
+                    .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
                     .padding(.horizontal, 19)
                     .padding(.top, 15)
                 }
@@ -454,37 +454,22 @@ struct HomeView: View {
             }
             .background(AppConstants.shared.backgroundColor)
             .preferredColorScheme(.dark)
-            .blur(radius: isLoading ? 4 : 0)
+            .blur(radius: appProvider.isLoading ? 4 : 0)
             .alert("Error", isPresented: $showErrorAlert, actions: {
                 Button("OK", role: .cancel) {}
             }, message: {
                 Text("There was an error. Please try again later.")
             })
             
-            SummaryPopupView(isPresented: $showSummaryPopup, isLoading: $isLoading, showError: $showErrorAlert)
+            SummaryPopupView(isPresented: $showSummaryPopup, isLoading: $appProvider.isLoading, showError: $showErrorAlert)
             
-            ImageGenerationPopupView(isPresented: $showImagePopup, isLoading: $isLoading, showError: $showErrorAlert)
+            ImageGenerationPopupView(isPresented: $showImagePopup, isLoading: $appProvider.isLoading, showError: $showErrorAlert)
             
             PDFPopupView(isPresented: $showPDFPopup, showError: $showErrorAlert)
             
-            TextToSpeachPopupView(isPresented: $showTextToSpeachPopup, isLoading: $isLoading, showError: $showErrorAlert)
+            TextToSpeachPopupView(isPresented: $showTextToSpeachPopup, isLoading: $appProvider.isLoading, showError: $showErrorAlert)
             
             FeaturePreviewPopupView(isPresented: $showPreviwInfoPopup, previewInfo: selectedPreview ?? featuresPreview[0])
-            
-            if isLoading {
-                Color.black.opacity(0.5)
-                    .edgesIgnoringSafeArea(.all)
-                
-                VStack {
-                    Text("Loading...")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .scaleEffect(1.2)
-                }
-            }
         }
     }
 }

@@ -48,7 +48,7 @@ class ChatViewModel: ObservableObject {
             self.messages = history.messages
         }
         
-        pickedModel = self.model.apiModel.modelsList.keys.first!
+        pickedModel = self.model.apiModel.modelsList.keys.first ?? ""
         
         $selectedImage.sink { newImage in
             if let image = newImage {
@@ -106,7 +106,7 @@ class ChatViewModel: ObservableObject {
             do {
                 let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [], aiModel: model.apiModel.modelsList[pickedModel]!)
                 for try await text in stream {
-                    if Task.isCancelled { return }
+                    if Task.isCancelled { break }
                     streamText += text
                     messageRow.responseText = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
                     self.messages[self.messages.count - 1] = messageRow
@@ -302,7 +302,7 @@ struct ChatView: View {
                                 
                                 Image(systemName: viewModel.isInteracting ? "stop.fill" : "paperplane.fill")
                                     .font(.headline)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.black.opacity(0.8))
                             }
                             .padding(.trailing, 11)
                         }

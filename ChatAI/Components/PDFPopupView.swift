@@ -98,7 +98,7 @@ struct PDFPopupView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(pdfFileData == nil ? Color.gray : AppConstants.shared.primaryColor)
-                            .foregroundColor(.white)
+                            .foregroundColor(pdfFileData == nil ? .white : .black)
                             .cornerRadius(10)
                             .opacity(pdfFileData == nil ? 0.5 : 1.0)
                     }

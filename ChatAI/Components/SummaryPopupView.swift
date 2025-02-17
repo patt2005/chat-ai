@@ -87,7 +87,7 @@ struct SummaryPopupView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(videoLink.isEmpty ? Color.gray : AppConstants.shared.primaryColor)
-                            .foregroundColor(.white)
+                            .foregroundColor(videoLink.isEmpty ? .white : .black)
                             .cornerRadius(10)
                             .opacity(videoLink.isEmpty ? 0.5 : 1.0)
                     }

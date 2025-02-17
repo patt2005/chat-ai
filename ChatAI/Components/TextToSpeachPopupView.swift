@@ -185,7 +185,7 @@ struct TextToSpeachPopupView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(inputText.isEmpty ? Color.gray : AppConstants.shared.primaryColor)
-                            .foregroundColor(.white)
+                            .foregroundColor(inputText.isEmpty ? .white : .black)
                             .cornerRadius(10)
                             .opacity(inputText.isEmpty ? 0.5 : 1.0)
                     }

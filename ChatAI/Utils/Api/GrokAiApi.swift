@@ -1,23 +1,13 @@
 //
-//  OpenAiApi.swift
+//  GrokAiApi.swift
 //  ChatAI
 //
-//  Created by Petru Grigor on 27.12.2024.
+//  Created by Petru Grigor on 17.02.2025.
 //
 
 import Foundation
 
-struct ImageGenerationData: Decodable, Hashable {
-    let revised_prompt: String
-    let url: String
-}
-
-enum ApiAnalysisError: Error {
-    case invalidData
-    case invalidResponse
-}
-
-class OpenAiApi: AiModel {
+class GrokAiApi: AiModel {
     struct CompletionResponse: Decodable {
         struct Choice: Decodable {
             let delta: Delta
@@ -33,11 +23,7 @@ class OpenAiApi: AiModel {
     var modelsList: [String: String] = [:]
     var apiEndpoint: String = ""
     
-    struct ImageGenerationResponse: Decodable {
-        let data: [ImageGenerationData]
-    }
-    
-    static var shared: any AiModel = OpenAiApi()
+    static var shared: any AiModel = GrokAiApi()
     
     private func cleanResponseText(_ text: String) -> String {
         var cleanedText = text
@@ -61,8 +47,8 @@ class OpenAiApi: AiModel {
         
         var messages: [[String: Any]] = [
             [
-                "role": "developer",
-                "content": "You are Chat GPT, a helpful assistant. You can answer any questions that user has."
+                "role": "system",
+                "content": "You are Grok, a chatbot inspired by the Hitchhikers Guide to the Galaxy."
             ]
         ]
         
@@ -72,20 +58,20 @@ class OpenAiApi: AiModel {
                 "content": chatHistory.sendText
             ])
             messages.append([
-                "role": "developer",
+                "role": "system",
                 "content": chatHistory.responseText ?? ""
             ])
         }
         
-        var userMessageContent: [[String: Any]] = [
-            ["type": "text", "text": message],
-        ]
+        var userMessageContent: [[String: Any]] = []
         
         imagesList.forEach { image in
             userMessageContent.append(
-                ["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(image)"]]
+                ["type": "image_url", "image_url": ["url": "data:image/jpeg;base64,\(image)", "detail": "high"]]
             )
         }
+        
+        userMessageContent.append(["type": "text", "text": message])
         
         messages.append([
             "role": "user",
@@ -137,79 +123,5 @@ class OpenAiApi: AiModel {
                 }
             }
         }
-    }
-}
-
-extension OpenAiApi {
-    func generateImage(_ prompt: String, size: String) async throws -> ImageGenerationData {
-        guard let url = URL(string: "\(apiEndpoint)/generate-image") else { throw URLError(.badURL) }
-        
-        let headers = [
-            "Content-Type": "application/json",
-        ]
-        
-        let body: [String: Encodable] = [
-            "model": "dall-e-3",
-            "size": size,
-            "n": 1,
-            "prompt": prompt
-        ]
-        
-        var request = URLRequest(url: url)
-        
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: body, options: []) else {
-            print("Error: Unable to serialize JSON")
-            throw ApiAnalysisError.invalidData
-        }
-        
-        request.httpBody = jsonData
-        request.httpMethod = "POST"
-        
-        headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-        
-        let (data, _) = try await URLSession.shared.data(for: request)
-        
-        let decoded = try JSONDecoder().decode(ImageGenerationResponse.self, from: data)
-        
-        guard let imageData = decoded.data.first else { throw ApiAnalysisError.invalidData }
-        
-        return imageData
-    }
-    
-    func generateSpeach(_ prompt: String, voice: String) async throws -> String {
-        guard let url = URL(string: "\(apiEndpoint)/generate-audio") else { throw URLError(.badURL) }
-        
-        let headers = [
-            "Content-Type": "application/json",
-        ]
-        
-        let body: [String: Any] = [
-            "model": "tts-1",
-            "input": prompt,
-            "voice": voice,
-        ]
-        
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: body) else {
-            throw NSError(domain: "Invalid JSON", code: 0, userInfo: nil)
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        
-        headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-        
-        let (data, _) = try await URLSession.shared.data(for: request)
-        
-        let tempFileUrl = FileManager.default.temporaryDirectory.appendingPathComponent("speech.mp3")
-        
-        if FileManager.default.fileExists(atPath: tempFileUrl.path) {
-            try FileManager.default.removeItem(at: tempFileUrl)
-        }
-        
-        try data.write(to: tempFileUrl)
-        
-        return tempFileUrl.path
     }
 }

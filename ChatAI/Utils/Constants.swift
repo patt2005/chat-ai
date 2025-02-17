@@ -13,44 +13,70 @@ let purchaseController = RCPurchaseController()
 class AppConstants {
     static let shared = AppConstants()
     
-    let appCode = "chat-ai"
-    let appVersion = "1.0.20"
+    let appVersion = "1.0.27"
     
     let backgroundColor = Color("BackgroundColor")
     let primaryColor = Color("AccentColor")
     let grayColor = Color(hex: "#222224")
     
-    var openAiApiKey = ""
-    var claudeApiKey = ""
     let revenueCatApiKey = "appl_XoAdMiLzAeolMowFFOghocvoFQs"
     let superWallApiKey = "pk_9c6b16267658b61dce6b3efd512cf7fff03930b2acca64e7"
-    var qwenApiKey = ""
     
-    struct ApiResponse: Decodable {
-        let openAiApiKey: String
-        let claudeAiApiKey: String
-        let qwenApiKey: String
+    struct ChatModelsApiResponse: Decodable {
+        struct ChatSnippets: Decodable {
+            struct ChatInfo: Decodable {
+                let Endpoint: String
+                let Models: [String:String]
+            }
+            
+            let Qwen: ChatInfo
+            let GPT: ChatInfo
+            let Grok: ChatInfo
+            let Claude: ChatInfo
+            let Gemini: ChatInfo
+        }
+        
+        let AppTitle: String
+        let Chats: ChatSnippets
+        let FreeDailyMessages: Int
     }
     
-    private func getApiKeys() async {
-        let apiUrl = "https://pattt2005.pythonanywhere.com/chat-ai/"
+    @MainActor
+    private func loadChatModels() async {
+        guard let url = URL(string: "https://center.codbun.com/api/json/get-json?appId=2&jsonName=settings1") else { return }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
         
         do {
-            let (data, _) = try await URLSession.shared.data(from: URL(string: apiUrl)!)
-            let content = try JSONDecoder().decode(ApiResponse.self, from: data)
+            let (data, _) = try await URLSession.shared.data(for: request)
+            let response = try JSONDecoder().decode(ChatModelsApiResponse.self, from: data)
             
-            openAiApiKey = content.openAiApiKey
-            claudeApiKey = content.claudeAiApiKey
-            qwenApiKey = content.qwenApiKey
+            AppProvider.shared.appName = response.AppTitle
+            AppProvider.shared.maxDailyMessages = response.FreeDailyMessages
+            AppProvider.shared.loadMessagesCount()
             
+            ClaudeAiApi.shared.modelsList = response.Chats.Claude.Models
+            ClaudeAiApi.shared.apiEndpoint = response.Chats.Claude.Endpoint
+            
+            GeminiAiApi.shared.modelsList = response.Chats.Gemini.Models
+            
+            GrokAiApi.shared.modelsList = response.Chats.Grok.Models
+            GrokAiApi.shared.apiEndpoint = response.Chats.Grok.Endpoint
+            
+            OpenAiApi.shared.modelsList = response.Chats.GPT.Models
+            OpenAiApi.shared.apiEndpoint = response.Chats.GPT.Endpoint
+            
+            QwenApi.shared.modelsList = response.Chats.Qwen.Models
+            QwenApi.shared.apiEndpoint = response.Chats.Qwen.Endpoint
         } catch {
-            print("Caught an error retrieving API key: \(error.localizedDescription)")
+            print("Can not load chat models: \(error.localizedDescription)")
         }
     }
     
     private init() {
-        Task {
-            await getApiKeys()
+        Task { @MainActor in
+            await loadChatModels()
         }
     }
 }
@@ -60,6 +86,7 @@ enum AssistantModelType: String, Codable {
     case claudeAi = "claudeAi"
     case gemini = "gemini"
     case qwen = "qwen"
+    case grok = "grok"
 }
 
 func convertImageToBase64(image: UIImage) -> String? {
@@ -95,7 +122,7 @@ extension Color {
         default:
             (a, r, g, b) = (1, 1, 1, 0)
         }
-
+        
         self.init(
             .sRGB,
             red: Double(r) / 255,
@@ -114,21 +141,21 @@ extension UIImage {
     /// - Returns: Resized image.
     func resize(_ width: Int, _ height: Int) -> UIImage {
         let maxSize = CGSize(width: width, height: height)
-
+        
         let availableRect = AVFoundation.AVMakeRect(
             aspectRatio: self.size,
             insideRect: .init(origin: .zero, size: maxSize)
         )
         let targetSize = availableRect.size
-
+        
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
-
+        
         let resized = renderer.image { _ in
             self.draw(in: CGRect(origin: .zero, size: targetSize))
         }
-
+        
         return resized
     }
 }

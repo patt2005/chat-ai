@@ -56,6 +56,7 @@ struct TextSummaryView: View {
                             Image("share")
                                 .resizable()
                                 .scaledToFit()
+                                .foregroundColor(.black)
                                 .frame(width: 17.5, height: 17.5)
                         }
                     }
@@ -81,8 +82,10 @@ struct TextSummaryView: View {
                     HStack {
                         Image(systemName: "doc.on.doc")
                             .font(.headline)
+                            .foregroundColor(.black)
                         Text("Copy")
                             .font(.headline)
+                            .foregroundColor(.black)
                     }
                     .padding()
                     .frame(maxWidth: .infinity)

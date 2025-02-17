@@ -47,23 +47,29 @@ class AppProvider: ObservableObject {
     
     @Published var messagesCount: Int = 0
     
+    @Published var isLoading = false
+    @Published var appName: String = "Grock AI"
+    
     @Published var hasRequestedReview: Bool = false
     
     private let userDefaults = UserDefaults.standard
     
     private let messageCountKey = "dailyMessageCount"
     private let lastResetKey = "lastResetDate"
-    private let maxDailyMessages = 10
     
-    private func loadMessagesCount() {
-        let lastResetDate = userDefaults.object(forKey: lastResetKey) as? Date ?? Date.distantPast
-        
-        if !Calendar.current.isDateInToday(lastResetDate) {
-            resetDailyMessages()
-        } else {
-            messagesCount = userDefaults.integer(forKey: messageCountKey)
+    var maxDailyMessages = 0
+    
+    func loadMessagesCount() {
+        withAnimation(.easeInOut(duration: 0.5)) {
+            let lastResetDate = userDefaults.object(forKey: lastResetKey) as? Date ?? Date.distantPast
+            
+            if !Calendar.current.isDateInToday(lastResetDate) {
+                resetDailyMessages()
+            } else {
+                messagesCount = userDefaults.integer(forKey: messageCountKey)
+            }
+            hasRequestedReview = userDefaults.bool(forKey: "hasRequestedReview")
         }
-        hasRequestedReview = userDefaults.bool(forKey: "hasRequestedReview")
     }
     
     func sendMessage() {
@@ -81,7 +87,6 @@ class AppProvider: ObservableObject {
     
     private init() {
         self.isFirstOpen = !UserDefaults.standard.bool(forKey: "hasOpenedAppBefore")
-        loadMessagesCount()
         Purchases.shared.getCustomerInfo { (customerInfo, error) in
             self.isUserSubscribed = customerInfo?.entitlements.all["pro"]?.isActive == true
         }
@@ -100,18 +105,27 @@ class AppProvider: ObservableObject {
     func saveChatHistory() {
         do {
             let data = try JSONEncoder().encode(chatHistory)
-            UserDefaults.standard.set(data, forKey: "chatHistoryKey")
+            let fileURL = getChatHistoryFileURL()
+            
+            try data.write(to: fileURL, options: .atomic)
         } catch {
-            print("Error saving chat history: \(error.localizedDescription)")
+            print("❌ Error saving chat history: \(error.localizedDescription)")
         }
     }
     
-    private func loadChatHistory() {
-        guard let data = UserDefaults.standard.data(forKey: "chatHistoryKey") else { return }
+    func loadChatHistory() {
+        let fileURL = getChatHistoryFileURL()
         do {
+            let data = try Data(contentsOf: fileURL)
             chatHistory = try JSONDecoder().decode([ChatHistoryEntity].self, from: data)
         } catch {
-            print("Error loading chat history: \(error.localizedDescription)")
+            print("⚠️ Error loading chat history: \(error.localizedDescription)")
+            chatHistory = []
         }
+    }
+    
+    private func getChatHistoryFileURL() -> URL {
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return documentDirectory.appendingPathComponent("chatHistory.json")
     }
 }
