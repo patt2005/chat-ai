@@ -117,7 +117,7 @@ struct SettingsView: View {
                         }
                     }
                     
-                    Link(destination: URL(string: "https://docs.google.com/document/d/1uth_ytIH6sL8eJu1w2loQkPMonuRYz-c1yq5xkVK71k/edit?usp=sharing")!) {
+                    Link(destination: URL(string: "https://apps.codbun.com/qwently-ai/privacy")!) {
                         HStack {
                             Image(systemName: "lock.shield")
                                 .foregroundColor(AppConstants.shared.primaryColor)
@@ -127,7 +127,7 @@ struct SettingsView: View {
                         }
                     }
                     
-                    Link(destination: URL(string: "https://docs.google.com/document/d/1VbemNFyZpawCaigbmEPzndAt3HN-iH4VsMH0Znsi-gU/edit?usp=sharing")!) {
+                    Link(destination: URL(string: "https://apps.codbun.com/qwently-ai/terms")!) {
                         HStack {
                             Image(systemName: "doc.text")
                                 .foregroundColor(AppConstants.shared.primaryColor)

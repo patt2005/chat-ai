@@ -87,7 +87,7 @@ struct ImageDataView: View {
                             .font(.headline)
                             .foregroundColor(.black)
                         Text("Download Image")
-                            .fontWeight(.bold)
+                            .fontWeight(.medium)
                             .foregroundColor(.black)
                     }
                     .padding()
@@ -107,7 +107,7 @@ struct ImageDataView: View {
                             .font(.headline)
                             .foregroundColor(.black)
                         Text("Share Image")
-                            .fontWeight(.bold)
+                            .fontWeight(.medium)
                             .foregroundColor(.black)
                     }
                     .padding()

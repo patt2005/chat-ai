@@ -83,9 +83,11 @@ struct ImageGenerationPopupView: View {
                         
                         Task {
                             do {
-                                let generatedImage = try await OpenAiApi().generateImage(promptText, size: selectedResolution)
-                                
-                                appProvider.navigationPath.append(.imageDataView(data: generatedImage))
+                                if let aiModel = OpenAiApi.shared as? OpenAiApi {
+                                    let generatedImage = try await aiModel.generateImage(promptText, size: selectedResolution)
+                                    
+                                    appProvider.navigationPath.append(.imageDataView(data: generatedImage))
+                                }
                             } catch {
                                 print("Caught an error: \(error.localizedDescription)")
                                 showError = true

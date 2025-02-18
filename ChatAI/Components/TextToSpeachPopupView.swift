@@ -169,9 +169,11 @@ struct TextToSpeachPopupView: View {
                         
                         Task {
                             do {
-                                let audioFile = try await OpenAiApi().generateSpeach(inputText, voice: viewModel.selectedVoice.name)
-                                
-                                appProvider.navigationPath.append(.speachDetailsView(audioFilePath: audioFile))
+                                if let aiModel = OpenAiApi.shared as? OpenAiApi {
+                                    let audioFile = try await aiModel.generateSpeach(inputText, voice: viewModel.selectedVoice.name)
+                                    
+                                    appProvider.navigationPath.append(.speachDetailsView(audioFilePath: audioFile))
+                                }
                             } catch {
                                 showError = true
                             }
