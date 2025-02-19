@@ -11,7 +11,6 @@ protocol AiModel {
     static var shared: any AiModel { get set }
     
     var modelsList: [String:String] { get set }
-    var apiEndpoint: String { get set }
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error>
 }

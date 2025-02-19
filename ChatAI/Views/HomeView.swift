@@ -42,14 +42,6 @@ struct HomeView: View {
     
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     
-    @State private var showSummaryPopup = false
-    @State private var showImagePopup = false
-    @State private var showPDFPopup = false
-    @State private var showTextToSpeachPopup = false
-    @State private var showPreviwInfoPopup = false
-    
-    @State private var showErrorAlert = false
-    
     @Environment(\.requestReview) var requestReview
     
     private let ideaInfoList: [IdeaInfo] = [
@@ -99,14 +91,6 @@ struct HomeView: View {
         AppInfo(name: "Meme AI", image: "meme-ai", description: "Track trending meme coins in real-time with AI-powered insights, price alerts, and market analysis", appUrl: "https://apps.apple.com/us/app/meme-coin-tracker-dex-screener/id6738891806"),
         AppInfo(name: "Motivation AI", image: "motivation", description: "Stay inspired every day with personalized AI-generated motivational quotes and life-changing affirmations", appUrl: "https://apps.apple.com/us/app/motivation-stoic-daily-quotes/id6740817263"),
         AppInfo(name: "Learn AI", image: "learn-ai", description: "An interactive AI-powered educational app designed for kids to learn coding, problem-solving, and critical thinking", appUrl: "https://apps.apple.com/us/app/learnai-%C3%AEnva%C8%9B%C4%83-limba-rom%C3%A2n%C4%83/id6738118898"),
-    ]
-    
-    @State private var selectedPreview: FeaturePreviewInfo?
-    
-    private let featuresPreview: [FeaturePreviewInfo] = [FeaturePreviewInfo(features: [Feature(text: "Enter Your Prompt & Select Resolution 📝🎨", image: "image8"), Feature(text: "Let AI Work Its Magic… ⏳✨", image: "image2"), Feature(text: "Download & Share 🚀📤", image: "image6")]),
-                                                         FeaturePreviewInfo(features: [Feature(text: "📌 Insert a YouTube Link", image: "image10"), Feature(text: "Let the AI Process the Video ⏳", image: "image2"), Feature(text: "Get a Clear, Concise Summary 🚀", image: "image9")]),
-                                                         FeaturePreviewInfo(features: [Feature(text: "Upload Your PDF 💡", image: "image5"), Feature(text: "Ask Any Question You Have 🤔", image: "image7"), Feature(text: "Get Your Answer Fast ⏳", image: "image4")]),
-                                                         FeaturePreviewInfo(features: [Feature(text: "Enter Your Text & Choose a Voice 🔊", image: "image3"), Feature(text: "AI Processes Your Request ⏳✨", image: "image2"), Feature(text: "Listen, Download, or Share 🚀📤", image: "image1")])
     ]
     
     private let popularPrompts: [String] = [
@@ -231,9 +215,7 @@ struct HomeView: View {
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(
-                        LinearGradient(colors: [Color.black.opacity(0.5), Color.gray.opacity(0.4)],
-                                       startPoint: .topLeading,
-                                       endPoint: .bottomTrailing)
+                        AppConstants.shared.grayColor
                     )
                     .cornerRadius(15)
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
@@ -295,10 +277,10 @@ struct HomeView: View {
                         .onAppear {
                             if (premiumFeatures.isEmpty) {
                                 premiumFeatures.append(contentsOf: [
-                                    PremiumFeature(title: "Image generation", image: "t-i", description: "Create images with prompts", action: { showImagePopup = true }),
-                                    PremiumFeature(title: "YouTube summary", image: "y-t", description: "Summarize text from a video", action: { showSummaryPopup = true }),
-                                    PremiumFeature(title: "Chat with PDF", image: "p-t", description: "Ask questions about PDF", action: { showPDFPopup = true }),
-                                    PremiumFeature(title: "Text to Speech", image: "t-s", description: "Convert text into audio speech", action: { showTextToSpeachPopup = true }),
+                                    PremiumFeature(title: "Image generation", image: "t-i", description: "Create images with prompts", action: { appProvider.showBlurOverlay = true; appProvider.showImagePopup = true }),
+                                    PremiumFeature(title: "YouTube summary", image: "y-t", description: "Summarize text from a video", action: { appProvider.showBlurOverlay = true; appProvider.showSummaryPopup = true }),
+                                    PremiumFeature(title: "Chat with PDF", image: "p-t", description: "Ask questions about PDF", action: { appProvider.showBlurOverlay = true; appProvider.showPDFPopup = true }),
+                                    PremiumFeature(title: "Text to Speech", image: "t-s", description: "Convert text into audio speech", action: { appProvider.showBlurOverlay = true; appProvider.showTextToSpeachPopup = true }),
                                 ])
                             }
                         }
@@ -316,8 +298,9 @@ struct HomeView: View {
                                         if appProvider.isUserSubscribed {
                                             premiumFeatures[index].action()
                                         } else {
-                                            selectedPreview = featuresPreview[index]
-                                            showPreviwInfoPopup = true
+                                            appProvider.selectedPreview = featuresPreview[index]
+                                            appProvider.showPreviwInfoPopup = true
+                                            appProvider.showBlurOverlay = true
                                         }
                                     }
                                 }) {
@@ -455,21 +438,11 @@ struct HomeView: View {
             .background(AppConstants.shared.backgroundColor)
             .preferredColorScheme(.dark)
             .blur(radius: appProvider.isLoading ? 4 : 0)
-            .alert("Error", isPresented: $showErrorAlert, actions: {
+            .alert("Error", isPresented: $appProvider.showErrorAlert, actions: {
                 Button("OK", role: .cancel) {}
             }, message: {
                 Text("There was an error. Please try again later.")
             })
-            
-            SummaryPopupView(isPresented: $showSummaryPopup, isLoading: $appProvider.isLoading, showError: $showErrorAlert)
-            
-            ImageGenerationPopupView(isPresented: $showImagePopup, isLoading: $appProvider.isLoading, showError: $showErrorAlert)
-            
-            PDFPopupView(isPresented: $showPDFPopup, showError: $showErrorAlert)
-            
-            TextToSpeachPopupView(isPresented: $showTextToSpeachPopup, isLoading: $appProvider.isLoading, showError: $showErrorAlert)
-            
-            FeaturePreviewPopupView(isPresented: $showPreviwInfoPopup, previewInfo: selectedPreview ?? featuresPreview[0])
         }
     }
 }

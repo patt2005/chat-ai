@@ -9,133 +9,103 @@ import SwiftUI
 import PhotosUI
 
 struct ImageDataView: View {
-    let data: ImageGenerationData
-    
+    let image: UIImage
+    let generatedDate: String = DateFormatter.localizedString(from: Date(), dateStyle: .medium, timeStyle: .short)
+    let aspectRatio: String
+    let style: String
+
     @State private var isSharing: Bool = false
     @State private var showSuccessAlert: Bool = false
     
     let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     
-    private func saveImageToPhotos(from urlString: String) {
-        guard let url = URL(string: urlString) else {
-            print("Invalid URL")
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                print("Error downloading image: \(error.localizedDescription)")
-                return
-            }
-            
-            guard let data = data, let image = UIImage(data: data) else {
-                print("Failed to decode image data")
-                return
-            }
-            
-            PHPhotoLibrary.requestAuthorization { status in
-                if status == .authorized {
-                    PHPhotoLibrary.shared().performChanges({
-                        PHAssetChangeRequest.creationRequestForAsset(from: image)
-                    }) { success, error in
-                        if success {
-                            print("Image saved to photo library successfully")
-                            showSuccessAlert = true
-                        } else {
-                            print("Error saving image: \(error?.localizedDescription ?? "Unknown error")")
-                        }
+    private func saveImageToPhotos() {
+        PHPhotoLibrary.requestAuthorization { status in
+            if status == .authorized {
+                PHPhotoLibrary.shared().performChanges({
+                    PHAssetChangeRequest.creationRequestForAsset(from: image)
+                }) { success, error in
+                    if success {
+                        showSuccessAlert = true
+                    } else {
+                        print("Error saving image: \(error?.localizedDescription ?? "Unknown error")")
                     }
-                } else {
-                    print("Photo library access not authorized")
                 }
+            } else {
+                print("Photo library access not authorized")
             }
-        }.resume()
+        }
     }
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 15) {
-                AsyncImage(url: URL(string: data.url)) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(maxWidth: .infinity, maxHeight: 300)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .cornerRadius(8)
-                            .shadow(radius: 5)
-                    case .failure:
-                        Image(systemName: "xmark.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 80, height: 80)
-                            .foregroundColor(.gray)
-                    @unknown default:
-                        EmptyView()
-                    }
+            VStack(spacing: 20) {
+                VStack {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFit()
+                        .cornerRadius(12)
+                        .shadow(radius: 10)
+                        .padding()
                 }
-                .frame(maxWidth: .infinity, maxHeight: 300)
+                .background(Color.black.opacity(0.2))
+                .cornerRadius(16)
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(Color.white.opacity(0.2), lineWidth: 1))
                 .padding(.horizontal)
-                
-                Button(action: {
-                    saveImageToPhotos(from: data.url)
-                }) {
-                    HStack {
-                        Image(systemName: "arrow.down.circle.fill")
-                            .font(.headline)
-                            .foregroundColor(.black)
-                        Text("Download Image")
-                            .fontWeight(.medium)
-                            .foregroundColor(.black)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(AppConstants.shared.primaryColor)
-                    .cornerRadius(10)
-                    .shadow(radius: 5)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("📅 Generated on: \(generatedDate)")
+                    Text("🎨 Style: \(style)")
+                    Text("📐 Aspect Ratio: \(aspectRatio)")
                 }
-                .padding(.horizontal, 50)
-                
-                Button(action: {
-                    impactFeedback.impactOccurred()
-                    isSharing = true
-                }) {
-                    HStack {
-                        Image(systemName: "square.and.arrow.up")
-                            .font(.headline)
-                            .foregroundColor(.black)
-                        Text("Share Image")
-                            .fontWeight(.medium)
-                            .foregroundColor(.black)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(AppConstants.shared.primaryColor)
-                    .cornerRadius(10)
-                    .shadow(radius: 5)
-                }
-                .padding(.horizontal, 50)
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Revised Prompt")
-                        .font(.headline)
-                        .fontWeight(.bold)
-                    
-                    Text(data.revised_prompt)
-                        .font(.body)
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.leading)
-                        
-                }
+                .font(.subheadline)
+                .foregroundColor(.white.opacity(0.8))
                 .padding()
-                .background(Color(UIColor.secondarySystemBackground))
-                .cornerRadius(10)
+                .background(Color.black.opacity(0.3))
+                .cornerRadius(12)
+                .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.white.opacity(0.2), lineWidth: 1))
                 .padding(.horizontal)
-                .padding(.bottom, 40)
+                
+                VStack(spacing: 12) {
+                    Button(action: {
+                        saveImageToPhotos()
+                    }) {
+                        HStack {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .font(.headline)
+                            Text("Download Image")
+                                .fontWeight(.medium)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white.opacity(0.2))
+                        .cornerRadius(12)
+                        .foregroundColor(.white)
+                        .shadow(radius: 5)
+                    }
+                    .padding(.horizontal, 40)
+
+                    Button(action: {
+                        impactFeedback.impactOccurred()
+                        isSharing = true
+                    }) {
+                        HStack {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.headline)
+                            Text("Share Image")
+                                .fontWeight(.medium)
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.white.opacity(0.2))
+                        .cornerRadius(12)
+                        .foregroundColor(.white)
+                        .shadow(radius: 5)
+                    }
+                    .padding(.horizontal, 40)
+                }
             }
-            .padding(.top, 20)
+            .padding(.vertical, 20)
         }
         .background(AppConstants.shared.backgroundColor)
         .navigationBarTitleDisplayMode(.inline)
@@ -152,7 +122,7 @@ struct ImageDataView: View {
             }
         }
         .sheet(isPresented: $isSharing) {
-            ActivityView(activityItems: [data.url])
+            ActivityView(activityItems: [image])
         }
     }
 }

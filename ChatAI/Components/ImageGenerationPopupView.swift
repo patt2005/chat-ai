@@ -13,19 +13,46 @@ struct ImageGenerationPopupView: View {
     @Binding var showError: Bool
     
     @State private var promptText: String = ""
-    @State private var selectedResolution: String = "1024x1024"
+    @State private var selectedStyle: String = "3D Model"
+    @State private var selectedAspectRatio: String = "1:1"
+    
     @ObservedObject private var appProvider = AppProvider.shared
     
-    let resolutions = ["1024x1024", "1024x1792", "1792x1024"]
+    private let artStyles: [String: String] = [
+        "Analog Film": "analog-film",
+        "3D Model": "3d-model",
+        "Anime": "anime",
+        "Cinematic": "cinematic",
+        "Comic Book": "comic-book",
+        "Digital Art": "digital-art",
+        "Enhance": "enhance",
+        "Fantasy Art": "fantasy-art",
+        "Isometric": "isometric",
+        "Line Art": "line-art",
+        "Low Poly": "low-poly",
+        "Neon Punk": "neon-punk",
+        "Origami": "origami",
+        "Photographic": "photographic",
+        "Pixel Art": "pixel-art",
+        "Tile Texture": "tile-texture"
+    ]
+    
+    private let aspectRatios = [
+        "16:9", "1:1", "21:9", "2:3", "3:2",
+        "4:5", "5:4", "9:16", "9:21"
+    ]
     
     var body: some View {
         ZStack {
             if isPresented {
-                Color.black.opacity(0.4)
+                Rectangle()
+                    .fill(Color.clear)
                     .edgesIgnoringSafeArea(.all)
+                    .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation {
                             isPresented = false
+                            appProvider.showBlurOverlay = false
                         }
                     }
                     .transition(.opacity)
@@ -39,6 +66,7 @@ struct ImageGenerationPopupView: View {
                         Button(action: {
                             withAnimation {
                                 isPresented = false
+                                appProvider.showBlurOverlay = false
                             }
                         }) {
                             Image(systemName: "xmark")
@@ -60,13 +88,36 @@ struct ImageGenerationPopupView: View {
                             }
                         )
                     
-                    Picker("Select Resolution", selection: $selectedResolution) {
-                        ForEach(resolutions, id: \.self) { resolution in
-                            Text(resolution)
+                    HStack {
+                        VStack(spacing: 0) {
+                            Text("Style")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Picker("Style", selection: $selectedStyle) {
+                                ForEach(Array(artStyles.keys), id: \.self) { key in
+                                    Text(key).tag(key)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(maxWidth: 150, maxHeight: 120)
+                            .clipped()
+                        }
+                        
+                        VStack(spacing: 0) {
+                            Text("Aspect Ratio")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Picker("Aspect Ratio", selection: $selectedAspectRatio) {
+                                ForEach(aspectRatios, id: \.self) { ratio in
+                                    Text(ratio).tag(ratio)
+                                }
+                            }
+                            .pickerStyle(WheelPickerStyle())
+                            .frame(maxWidth: 100, maxHeight: 120)
+                            .clipped()
                         }
                     }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .padding(.top, 10)
+                    .padding(.horizontal, 5)
                     
                     Text("Enter your prompt and select the desired resolution.")
                         .font(.subheadline)
@@ -78,16 +129,15 @@ struct ImageGenerationPopupView: View {
                         
                         withAnimation {
                             isPresented = false
+                            appProvider.showBlurOverlay = false
                             isLoading = true
                         }
                         
                         Task {
                             do {
-                                if let aiModel = OpenAiApi.shared as? OpenAiApi {
-                                    let generatedImage = try await aiModel.generateImage(promptText, size: selectedResolution)
-                                    
-                                    appProvider.navigationPath.append(.imageDataView(data: generatedImage))
-                                }
+                                let imageData = try await StabilyAiApi.shared.generateImage(promptText, style: artStyles[selectedStyle] ?? "", aspectRatio: selectedAspectRatio)
+                                
+                                appProvider.navigationPath.append(.imageDataView(image: imageData, style: selectedStyle, ratio: selectedAspectRatio))
                             } catch {
                                 print("Caught an error: \(error.localizedDescription)")
                                 showError = true

@@ -49,7 +49,6 @@ class ContentViewModel: ObservableObject {
     }
 }
 
-
 struct ContentView: View {
     @ObservedObject private var appProvider = AppProvider.shared
     
@@ -80,6 +79,8 @@ struct ContentView: View {
                             Text(appProvider.appName)
                                 .font(.title2.bold())
                                 .foregroundStyle(.white)
+                                .opacity(appProvider.opacity)
+                                .animation(.easeInOut(duration: 0.5), value: appProvider.opacity)
                         }
                     }
                     
@@ -115,7 +116,7 @@ struct ContentView: View {
                     switch destination {
                     case .chatView(let prompt, let model, let history): ChatView(prompt: prompt, model: model, chatHistory:  history)
                     case .summaryView(let text): TextSummaryView(text: text)
-                    case .imageDataView(let image): ImageDataView(data: image)
+                    case .imageDataView(let image, let style, let ratio): ImageDataView(image: image, aspectRatio: ratio, style: style)
                     case .speachDetailsView(let filePath) : SpeachDetailsView(audioFilePath: filePath)
                     case .restoreView : RestoreView()
                     case .manageSubscriptionView : ManageSubscriptionView()
@@ -124,10 +125,12 @@ struct ContentView: View {
                 }
             }
             
-            if appProvider.isLoading {
+            if appProvider.isLoading || appProvider.showBlurOverlay {
                 Color.black.opacity(0.5)
                     .edgesIgnoringSafeArea(.all)
-                
+            }
+            
+            if appProvider.isLoading {
                 VStack {
                     Text("Loading...")
                         .font(.headline)
@@ -138,6 +141,16 @@ struct ContentView: View {
                         .scaleEffect(1.2)
                 }
             }
+            
+            SummaryPopupView(isPresented: $appProvider.showSummaryPopup, isLoading: $appProvider.isLoading, showError: $appProvider.showErrorAlert)
+            
+            ImageGenerationPopupView(isPresented: $appProvider.showImagePopup, isLoading: $appProvider.isLoading, showError: $appProvider.showErrorAlert)
+            
+            PDFPopupView(isPresented: $appProvider.showPDFPopup, showError: $appProvider.showErrorAlert)
+            
+            TextToSpeachPopupView(isPresented: $appProvider.showTextToSpeachPopup, isLoading: $appProvider.isLoading, showError: $appProvider.showErrorAlert)
+            
+            FeaturePreviewPopupView(isPresented: $appProvider.showPreviwInfoPopup, previewInfo: appProvider.selectedPreview ?? featuresPreview[0])
         }
         .preferredColorScheme(.dark)
     }

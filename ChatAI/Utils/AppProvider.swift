@@ -48,7 +48,19 @@ class AppProvider: ObservableObject {
     @Published var messagesCount: Int = 0
     
     @Published var isLoading = false
-    @Published var appName: String = "Grock AI"
+    @Published var showBlurOverlay: Bool = false
+    
+    @Published var showSummaryPopup = false
+    @Published var showImagePopup = false
+    @Published var showPDFPopup = false
+    @Published var showTextToSpeachPopup = false
+    @Published var showPreviwInfoPopup = false
+    @Published var showErrorAlert = false
+    
+    @Published var selectedPreview: FeaturePreviewInfo?
+    
+    @Published var appName: String = ""
+    @Published var opacity: Double = 0
     
     @Published var hasRequestedReview: Bool = false
     
@@ -57,19 +69,17 @@ class AppProvider: ObservableObject {
     private let messageCountKey = "dailyMessageCount"
     private let lastResetKey = "lastResetDate"
     
-    var maxDailyMessages = 0
+    var maxDailyMessages = 5
     
-    func loadMessagesCount() {
-        withAnimation(.easeInOut(duration: 0.5)) {
-            let lastResetDate = userDefaults.object(forKey: lastResetKey) as? Date ?? Date.distantPast
-            
-            if !Calendar.current.isDateInToday(lastResetDate) {
-                resetDailyMessages()
-            } else {
-                messagesCount = userDefaults.integer(forKey: messageCountKey)
-            }
-            hasRequestedReview = userDefaults.bool(forKey: "hasRequestedReview")
+    private func loadMessagesCount() {
+        let lastResetDate = userDefaults.object(forKey: lastResetKey) as? Date ?? Date.distantPast
+        
+        if !Calendar.current.isDateInToday(lastResetDate) {
+            resetDailyMessages()
+        } else {
+            messagesCount = userDefaults.integer(forKey: messageCountKey)
         }
+        hasRequestedReview = userDefaults.bool(forKey: "hasRequestedReview")
     }
     
     func sendMessage() {
@@ -90,8 +100,9 @@ class AppProvider: ObservableObject {
         Purchases.shared.getCustomerInfo { (customerInfo, error) in
             self.isUserSubscribed = customerInfo?.entitlements.all["pro"]?.isActive == true
         }
-        AnalyticsManager.shared.setUserProperty(value: self.isUserSubscribed.description, property: "isPremiumUser")
+        loadMessagesCount()
         loadChatHistory()
+        AnalyticsManager.shared.setUserProperty(value: self.isUserSubscribed.description, property: "isPremiumUser")
     }
     
     func completeOnboarding() {

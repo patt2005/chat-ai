@@ -48,10 +48,11 @@ struct HistoryView: View {
                 
                 VStack(alignment: .leading, spacing: 4) {
                     ForEach(history.messages.suffix(2).reversed()) { message in
-                        Text(message.sendText)
+                        Text("⚬ \(message.responseText ?? "⚬ No response was generated.")")
                             .font(.subheadline)
                             .foregroundColor(.white.opacity(0.85))
-                            .lineLimit(1)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.leading)
                     }
                 }
                 .padding(.vertical, 5)

@@ -63,7 +63,7 @@ struct MessageRowView: View {
                     .cornerRadius(17.5)
             }
             
-            VStack(alignment: isUser ? .trailing : .leading, spacing: 7) {
+            VStack(alignment: isUser ? .trailing : .leading, spacing: 4) {
                 if !imagesList.isEmpty {
                     ReversedScrollView {
                         ForEach(Array(imagesList.enumerated()), id: \.offset) { index, image in
@@ -108,31 +108,53 @@ struct MessageRowView: View {
                                     isCopied = true
                                 }
                                 
+                                let generator = UINotificationFeedbackGenerator()
+                                generator.notificationOccurred(.success)
+                                
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                     withAnimation {
                                         isCopied = false
                                     }
                                 }
                             }) {
-                                HStack {
-                                    Image(systemName: isCopied ? "checkmark" : "document.on.document")
-                                        .font(.headline)
-                                        .foregroundStyle(.white.opacity(0.7))
-                                }
+                                Image(systemName: isCopied ? "checkmark" : "doc.on.doc.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 18, height: 18)
+                                .padding(8)
+                                .background(Color.white.opacity(0.15))
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                )
                             }
+                            .buttonStyle(.borderless)
                             
                             Button(action: {
                                 appProvider.stringToShare = text
                                 appProvider.isSharing = true
+                                
+                                let generator = UIImpactFeedbackGenerator(style: .light)
+                                generator.impactOccurred()
                             }) {
                                 HStack {
                                     Image(systemName: "square.and.arrow.up")
-                                        .font(.custom("", size: 19))
-                                        .foregroundStyle(.white.opacity(0.7))
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 18, height: 18)
                                 }
+                                .padding(8)
+                                .background(Color.white.opacity(0.15))
+                                .cornerRadius(10)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                )
                             }
+                            .buttonStyle(.borderless)
                         }
-                        .padding(.top, 1)
+                        .padding(.top, 5)
                     }
                 }
                 

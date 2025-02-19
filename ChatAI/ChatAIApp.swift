@@ -27,7 +27,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         Task {
             await handleNotificationPermissions(application: application)
-        } 
+        }
         
         return true
     }

@@ -21,7 +21,6 @@ class GrokAiApi: AiModel {
     }
     
     var modelsList: [String: String] = [:]
-    var apiEndpoint: String = ""
     
     static var shared: any AiModel = GrokAiApi()
     
@@ -39,7 +38,7 @@ class GrokAiApi: AiModel {
     }
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error> {
-        let url = URL(string: "\(apiEndpoint)/chat")!
+        let url = URL(string: "https://api.codbun.com/api/grok/chat")!
         
         let headers = [
             "Content-Type": "application/json",

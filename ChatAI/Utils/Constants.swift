@@ -38,12 +38,11 @@ class AppConstants {
         
         let AppTitle: String
         let Chats: ChatSnippets
-        let FreeDailyMessages: Int
     }
     
     @MainActor
-    private func loadChatModels() async {
-        guard let url = URL(string: "https://center.codbun.com/api/json/get-json?appId=2&jsonName=settings1") else { return }
+    func loadChatModels() async {
+        guard let url = URL(string: "https://center.codbun.com/api/json/2/settings1") else { return }
         
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -53,22 +52,13 @@ class AppConstants {
             let response = try JSONDecoder().decode(ChatModelsApiResponse.self, from: data)
             
             AppProvider.shared.appName = response.AppTitle
-            AppProvider.shared.maxDailyMessages = response.FreeDailyMessages
-            AppProvider.shared.loadMessagesCount()
+            AppProvider.shared.opacity = 1
             
             ClaudeAiApi.shared.modelsList = response.Chats.Claude.Models
-            ClaudeAiApi.shared.apiEndpoint = response.Chats.Claude.Endpoint
-            
             GeminiAiApi.shared.modelsList = response.Chats.Gemini.Models
-            
             GrokAiApi.shared.modelsList = response.Chats.Grok.Models
-            GrokAiApi.shared.apiEndpoint = response.Chats.Grok.Endpoint
-            
             OpenAiApi.shared.modelsList = response.Chats.GPT.Models
-            OpenAiApi.shared.apiEndpoint = response.Chats.GPT.Endpoint
-            
             QwenApi.shared.modelsList = response.Chats.Qwen.Models
-            QwenApi.shared.apiEndpoint = response.Chats.Qwen.Endpoint
         } catch {
             print("Can not load chat models: \(error.localizedDescription)")
         }
@@ -76,7 +66,7 @@ class AppConstants {
     
     private init() {
         Task { @MainActor in
-            await loadChatModels()
+            await self.loadChatModels()
         }
     }
 }
@@ -99,7 +89,7 @@ func convertImageToBase64(image: UIImage) -> String? {
 enum NavigationDestination: Hashable {
     case chatView(_ prompt: String = "", model: AssistantModel = AssistantModel(name: "Chat GPT", avatar: "chatgpt", apiModel: OpenAiApi.shared, type: .openAi), history: ChatHistoryEntity? = nil)
     case summaryView(text: String)
-    case imageDataView(data: ImageGenerationData)
+    case imageDataView(image: UIImage, style: String, ratio: String)
     case speachDetailsView(audioFilePath: String)
     case restoreView
     case manageSubscriptionView
@@ -159,3 +149,9 @@ extension UIImage {
         return resized
     }
 }
+
+let featuresPreview: [FeaturePreviewInfo] = [FeaturePreviewInfo(features: [Feature(text: "Enter Your Prompt & Select Resolution 📝🎨", image: "image8"), Feature(text: "Let AI Work Its Magic… ⏳✨", image: "image2"), Feature(text: "Download & Share 🚀📤", image: "image6")]),
+                                             FeaturePreviewInfo(features: [Feature(text: "📌 Insert a YouTube Link", image: "image10"), Feature(text: "Let the AI Process the Video ⏳", image: "image2"), Feature(text: "Get a Clear, Concise Summary 🚀", image: "image9")]),
+                                             FeaturePreviewInfo(features: [Feature(text: "Upload Your PDF 💡", image: "image5"), Feature(text: "Ask Any Question You Have 🤔", image: "image7"), Feature(text: "Get Your Answer Fast ⏳", image: "image4")]),
+                                             FeaturePreviewInfo(features: [Feature(text: "Enter Your Text & Choose a Voice 🔊", image: "image3"), Feature(text: "AI Processes Your Request ⏳✨", image: "image2"), Feature(text: "Listen, Download, or Share 🚀📤", image: "image1")])
+]

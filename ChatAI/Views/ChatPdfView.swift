@@ -19,6 +19,7 @@ class ChatPdfViewModel: ObservableObject {
     @Published var selectedImageToView: UIImage?
     
     private var pdfData: Data
+    private var responseTask: Task<Void, Never>?
     
     @MainActor
     func sendTapped() async {
@@ -42,6 +43,13 @@ class ChatPdfViewModel: ObservableObject {
     }
     
     @MainActor
+    func cancelResponse() {
+        responseTask?.cancel()
+        isInteracting = false
+        responseTask = nil
+    }
+    
+    @MainActor
     func retry(messageRow: MessageRow) async {
         let index = messages.firstIndex { message in
             return messageRow.id == message.id
@@ -61,20 +69,23 @@ class ChatPdfViewModel: ObservableObject {
         var messageRow = MessageRow(isInteracting: true, sendText: text, responseImage: "pdf", responseText: streamText, uploadedImages: [])
         self.messages.append(messageRow)
         
-        do {
-            let stream = try await GeminiAiApi().getPDFSummary(pdfData: pdfData, prompt: text)
-            for try await text in stream {
-                streamText += text
-                messageRow.responseText = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
-                self.messages[self.messages.count - 1] = messageRow
+        responseTask = Task {
+            do {
+                let stream = try await GeminiAiApi().getPDFSummary(pdfData: pdfData, prompt: text)
+                for try await text in stream {
+                    if Task.isCancelled { break }
+                    streamText += text
+                    messageRow.responseText = streamText.trimmingCharacters(in: .whitespacesAndNewlines)
+                    self.messages[self.messages.count - 1] = messageRow
+                }
+            } catch {
+                messageRow.responseError = error.localizedDescription
             }
-        } catch {
-            messageRow.responseError = error.localizedDescription
+            
+            messageRow.isInteracting = false
+            self.messages[self.messages.count - 1] = messageRow
+            isInteracting = false
         }
-        
-        messageRow.isInteracting = false
-        self.messages[self.messages.count - 1] = messageRow
-        isInteracting = false
     }
 }
 
@@ -141,7 +152,7 @@ struct ChatPdfView: View {
                         TextField("Type a message...", text: $viewModel.inputText, axis: .vertical)
                             .lineLimit(1...4)
                             .padding(.horizontal, 6)
-                            .padding(.leading, 8)
+                            .padding(.leading, 20)
                             .foregroundColor(.white)
                             .autocorrectionDisabled(true)
                             .textInputAutocapitalization(.sentences)
@@ -152,26 +163,28 @@ struct ChatPdfView: View {
                             }
                         
                         Button(action: {
-                            if !viewModel.isInteracting && !viewModel.inputText.isEmpty {
-                                Task {
-                                    await viewModel.sendTapped()
-                                    viewModel.scrollToBottom(proxy: reader)
+                            if !viewModel.isInteracting {
+                                if !viewModel.inputText.isEmpty {
+                                    Task {
+                                        await viewModel.sendTapped()
+                                        viewModel.scrollToBottom(proxy: reader)
+                                    }
                                 }
+                            } else {
+                                viewModel.cancelResponse()
                             }
                         }) {
-                            if !viewModel.isInteracting {
-                                Image(systemName: "paperplane.fill")
+                            ZStack {
+                                Rectangle()
+                                    .frame(width: 35, height: 35)
+                                    .cornerRadius(17.5)
+                                    .foregroundStyle(AppConstants.shared.primaryColor)
+                                
+                                Image(systemName: viewModel.isInteracting ? "stop.fill" : "paperplane.fill")
                                     .font(.headline)
-                                    .foregroundColor(.black)
-                                    .padding(7)
-                                    .background(AppConstants.shared.primaryColor)
-                                    .clipShape(Circle())
-                                    .padding(.trailing, 10)
-                            } else {
-                                ProgressView()
-                                    .frame(width: 20, height: 35)
-                                    .padding(.trailing, 20)
+                                    .foregroundColor(.black.opacity(0.8))
                             }
+                            .padding(.trailing, 11)
                         }
                     }
                 }

@@ -7,11 +7,6 @@
 
 import Foundation
 
-struct ImageGenerationData: Decodable, Hashable {
-    let revised_prompt: String
-    let url: String
-}
-
 enum ApiAnalysisError: Error {
     case invalidData
     case invalidResponse
@@ -31,11 +26,6 @@ class OpenAiApi: AiModel {
     }
     
     var modelsList: [String: String] = [:]
-    var apiEndpoint: String = ""
-    
-    struct ImageGenerationResponse: Decodable {
-        let data: [ImageGenerationData]
-    }
     
     static var shared: any AiModel = OpenAiApi()
     
@@ -53,7 +43,7 @@ class OpenAiApi: AiModel {
     }
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error> {
-        let url = URL(string: "\(apiEndpoint)/chat")!
+        let url = URL(string: "https://api.codbun.com/api/chatgpt/chat")!
         
         let headers = [
             "Content-Type": "application/json",
@@ -141,43 +131,8 @@ class OpenAiApi: AiModel {
 }
 
 extension OpenAiApi {
-    func generateImage(_ prompt: String, size: String) async throws -> ImageGenerationData {
-        guard let url = URL(string: "\(apiEndpoint)/generate-image") else { throw URLError(.badURL) }
-        
-        let headers = [
-            "Content-Type": "application/json",
-        ]
-        
-        let body: [String: Encodable] = [
-            "model": "dall-e-3",
-            "size": size,
-            "n": 1,
-            "prompt": prompt
-        ]
-        
-        var request = URLRequest(url: url)
-        
-        guard let jsonData = try? JSONSerialization.data(withJSONObject: body, options: []) else {
-            print("Error: Unable to serialize JSON")
-            throw ApiAnalysisError.invalidData
-        }
-        
-        request.httpBody = jsonData
-        request.httpMethod = "POST"
-        
-        headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
-        
-        let (data, _) = try await URLSession.shared.data(for: request)
-        
-        let decoded = try JSONDecoder().decode(ImageGenerationResponse.self, from: data)
-        
-        guard let imageData = decoded.data.first else { throw ApiAnalysisError.invalidData }
-        
-        return imageData
-    }
-    
     func generateSpeach(_ prompt: String, voice: String) async throws -> String {
-        guard let url = URL(string: "\(apiEndpoint)/generate-audio") else { throw URLError(.badURL) }
+        guard let url = URL(string: "https://api.codbun.com/api/chatgpt/generate-audio") else { throw URLError(.badURL) }
         
         let headers = [
             "Content-Type": "application/json",

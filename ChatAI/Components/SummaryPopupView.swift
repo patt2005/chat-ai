@@ -19,11 +19,14 @@ struct SummaryPopupView: View {
     var body: some View {
         ZStack {
             if isPresented {
-                Color.black.opacity(0.4)
+                Rectangle()
+                    .fill(Color.clear)
                     .edgesIgnoringSafeArea(.all)
+                    .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation {
                             isPresented = false
+                            appProvider.showBlurOverlay = false
                         }
                     }
                     .transition(.opacity)
@@ -37,6 +40,7 @@ struct SummaryPopupView: View {
                         Button(action: {
                             withAnimation {
                                 isPresented = false
+                                appProvider.showBlurOverlay = false
                             }
                         }) {
                             Image(systemName: "xmark")
@@ -67,6 +71,7 @@ struct SummaryPopupView: View {
                         
                         withAnimation {
                             isPresented = false
+                            appProvider.showBlurOverlay = false
                             isLoading = true
                         }
                         

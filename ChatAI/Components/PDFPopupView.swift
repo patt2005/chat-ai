@@ -20,11 +20,14 @@ struct PDFPopupView: View {
     var body: some View {
         ZStack {
             if isPresented {
-                Color.black.opacity(0.4)
+                Rectangle()
+                    .fill(Color.clear)
                     .edgesIgnoringSafeArea(.all)
+                    .contentShape(Rectangle())
                     .onTapGesture {
                         withAnimation {
                             isPresented = false
+                            appProvider.showBlurOverlay = false
                         }
                     }
                     .transition(.opacity)
@@ -38,6 +41,7 @@ struct PDFPopupView: View {
                         Button(action: {
                             withAnimation {
                                 isPresented = false
+                                appProvider.showBlurOverlay = false
                             }
                         }) {
                             Image(systemName: "xmark")
@@ -87,6 +91,7 @@ struct PDFPopupView: View {
                         
                         withAnimation {
                             isPresented = false
+                            appProvider.showBlurOverlay = false
                         }
                         
                         appProvider.navigationPath.append(.chatPdfView(pdfData: pdfFileData))

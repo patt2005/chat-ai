@@ -12,7 +12,6 @@ import PDFKit
 
 class GeminiAiApi: AiModel {
     var modelsList: [String: String] = [:]
-    var apiEndpoint: String = ""
     
     static var shared: any AiModel = GeminiAiApi()
     

@@ -104,7 +104,7 @@ class ChatViewModel: ObservableObject {
         
         responseTask = Task {
             do {
-                let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [], aiModel: model.apiModel.modelsList[pickedModel]!)
+                let stream = try await model.apiModel.getChatResponse(text, imagesList: imagesList, chatHistoryList: self.chatHistory?.messages ?? [], aiModel: model.apiModel.modelsList[pickedModel] ?? "")
                 for try await text in stream {
                     if Task.isCancelled { break }
                     streamText += text

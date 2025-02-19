@@ -8,9 +8,8 @@
 import Foundation
 import SwiftUI
 
-class ClaudeAiApi: AiModel {    
+class ClaudeAiApi: AiModel {
     var modelsList: [String: String] = [:]
-    var apiEndpoint: String = ""
     
     static var shared: any AiModel = ClaudeAiApi()
     
@@ -41,7 +40,7 @@ class ClaudeAiApi: AiModel {
     }
     
     func getChatResponse(_ message: String, imagesList: [String], chatHistoryList: [MessageRow], aiModel: String) async throws -> AsyncThrowingStream<String, Error> {
-        let apiURL = URL(string: "\(apiEndpoint)/chat")!
+        let apiURL = URL(string: "https://api.codbun.com/api/claude/chat")!
         
         var contentList: [[String: Any]] = [["type": "text", "text": message]]
         
